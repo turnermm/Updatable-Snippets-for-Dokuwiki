@@ -12,13 +12,25 @@ require_once(DOKU_PLUGIN.'action.php');
  * need to inherit from this class
  */
 class action_plugin_snippets extends DokuWiki_Action_Plugin {
-
+    private $metafn;
+      
+    /**
+     *  Sets up database file for pages requiring updates
+    */     
+    function __construct() {
+        global $JSINFO;      
+        $this->metafn = metaFN('snippets_upd','.ser');      
+        if(!file_exists($this->metafn)) {
+            io_saveFile($this->metafn,serialize(array($JSINFO['id'])));
+        }
+    }
     /**
      * Register callbacks
      */
     function register(&$controller) {
         $controller->register_hook('TOOLBAR_DEFINE','AFTER', $this, 'handle_toolbar_define');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call');
+        $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');
     }
 
     /**
@@ -40,14 +52,19 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $event->data[] = $item;
     }
 
+     
+     function handle_wiki_read(&$event,$param) {
+     //  msg($event->result);
+    }
     /**
      * Handles the AJAX calls
      *
      * @author Michael Klier <chi@chimeric.de>
+     * @author Myron Turner <turnermm02@shaw.ca>
      */
     function handle_ajax_call(&$event, $param) {
         global $lang;
-        if($event->data == 'snippet_preview' or $event->data == 'snippet_insert') {
+        if($event->data == 'snippet_preview' or $event->data == 'snippet_insert'  or $event->data == 'snippet_update' ) {
             $event->preventDefault();  
             $event->stopPropagation();
             $id = cleanID($_REQUEST['id']);
@@ -58,10 +75,18 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                     } else {
                         print p_locale_xhtml('denied');
                     }
-                } elseif($event->data == 'snippet_insert') {
+                } elseif($event->data == 'snippet_insert' || $event->data == 'snippet_update') {
+                
                     if(auth_quickaclcheck($id) >= AUTH_READ) {
+                        if($event->data == 'snippet_update' ) {
+                           print "\n~~SNIPPET_O~~$id~~\n";
+                        }
                         print "\n\n"; // always start on a new line (just to be safe)
                         print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
+                        if($event->data == 'snippet_update' ) {                       
+                           $curpage = cleanID($_REQUEST['curpage']);
+                           print "\n~~SNIPPET_C~~$id~~\n";
+                        }
                     }
                 }
             }
