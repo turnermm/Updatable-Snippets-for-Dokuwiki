@@ -16,12 +16,13 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
       
     /**
      *  Sets up database file for pages requiring updates
+     *  @author Myron Turner<turnermm02@shaw.ca>
     */     
     function __construct() {
-        global $JSINFO;      
         $this->metafn = metaFN('snippets_upd','.ser');      
         if(!file_exists($this->metafn)) {
-            io_saveFile($this->metafn,serialize(array($JSINFO['id'])));
+            $ar = array('snip'=>array(), 'doc'=>array());
+            io_saveFile($this->metafn,serialize($ar));
         }
     }
     /**
@@ -54,7 +55,13 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
 
      
      function handle_wiki_read(&$event,$param) {
-     //  msg($event->result);
+     //  msg('<pre>'.print_r($event,true).'</pre>');
+     //  $event->result = '**test**';
+     global $INFO, $ID;
+     $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");
+     //msg("pid:  $page_id,  ID: $ID, INFO[id] " .  $INFO['id']);
+     
+     
     }
     /**
      * Handles the AJAX calls
@@ -84,8 +91,22 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         print "\n\n"; // always start on a new line (just to be safe)
                         print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
                         if($event->data == 'snippet_update' ) {                       
+                             print "\n\n~~SNIPPET_C~~$id~~\n";
                            $curpage = cleanID($_REQUEST['curpage']);
-                           print "\n~~SNIPPET_C~~$id~~\n";
+                             $snip_data=unserialize(io_readFile($this->metafn,false));
+                             if(!array_key_exists($curpage,$snip_data['doc'])) {
+                                 $snip_data['doc'][$curpage] = array($id);
+                             }
+                             elseif(!in_array($id,$snip_data['doc'][$curpage])) {
+                                 array_push($id,$snip_data['doc'][$curpage]);              
+                             }
+                             if(!array_key_exists($id,$snip_data['snip'])) {
+                                 $snip_data['snip'][$id] = array($curpage);
+                             }
+                             elseif(!in_array($curpage,$snip_data['snip'][$id])) {
+                                 array_push($curpage,$snip_data['doc'][$id]);              
+                             }      
+                             io_saveFile($this->metafn,serialize($snip_data));                             
                         }
                     }
                 }

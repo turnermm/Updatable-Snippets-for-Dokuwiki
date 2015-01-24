@@ -26,6 +26,8 @@ class syntax_plugin_snippets extends DokuWiki_Syntax_Plugin {
      */
     function connectTo($mode) {       
       $this->Lexer->addEntryPattern('<snippet>(?=.*?</snippet>)',$mode,'plugin_snippets');
+      $this->Lexer->addSpecialPattern('~~SNIPPET_O~~.*?~~',$mode,'plugin_snippets');
+      $this->Lexer->addSpecialPattern('~~SNIPPET_C~~.*?~~',$mode,'plugin_snippets');
     }
 
     function postConnect() {
@@ -48,6 +50,9 @@ class syntax_plugin_snippets extends DokuWiki_Syntax_Plugin {
             case DOKU_LEXER_EXIT:
                 return array('snippet_close', $title);
                 break;
+            case  DOKU_LEXER_SPECIAL:            
+               return array('update',$match); 
+               break;               
         }       
         return false;
     }
@@ -67,6 +72,9 @@ class syntax_plugin_snippets extends DokuWiki_Syntax_Plugin {
                     break;
                 case 'data' :      
                     $renderer->doc .= $renderer->_xmlEntities($data); 
+                    break;
+                case 'update':     
+                   $renderer->doc .= ""; 
                     break;
             }
             return true;
