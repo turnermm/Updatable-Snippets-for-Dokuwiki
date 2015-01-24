@@ -1,6 +1,7 @@
 <?php /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Michael Klier <chi@chimeric.de>
+ * @author     Myron Turner <turnermm02@shaw.ca>
  */
 if(!defined('DOKU_INC')) die();
 
@@ -53,16 +54,38 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $event->data[] = $item;
     }
 
+     /**
+     * Replaces outdated snippets with updated versions
+     * Is capable of replacing more than one snippet in a page 
+     *
+     * @author Myron Turner <turnermm02@shaw.ca>
+     */    
+     function handle_wiki_read(&$event,$param) {         
+         $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
+         $snip_data=unserialize(io_readFile($this->metafn,false));          
+         if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
      
-     function handle_wiki_read(&$event,$param) {
-     //  msg('<pre>'.print_r($event,true).'</pre>');
-     //  $event->result = '**test**';
-     global $INFO, $ID;
-     $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");
-     //msg("pid:  $page_id,  ID: $ID, INFO[id] " .  $INFO['id']);
+         global $replacement;  // will hold new version of snippet
      
-     
+         $snippets = $snip_data['doc'][$page_id];
+         $page_t = filemtime(wikiFN($page_id));
+         foreach ($snippets as $snip) {
+             $snip_file = wikiFN($snip);          
+             $snip_t = filemtime($snip_file);             
+             if($snip_t < $page_t) return;  // Is snippet older than age.  If not proceed to replacement
+             $replacement = io_readFile($snip_file); //get updated snippet
+             $snip_id = preg_quote($snip);  
+             $event->result = preg_replace_callback(
+                "|(?<=~~SNIPPET_O~~$snip_id~~)(.*?)(?=~~SNIPPET_C~~$snip_id~~)|ms",
+                     function($matches){
+                         global $replacement;
+                         return "\n" .$replacement  . "\n";
+                  }, 
+                  $event->result
+                );           
+          }
     }
+    
     /**
      * Handles the AJAX calls
      *
@@ -92,7 +115,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
                         if($event->data == 'snippet_update' ) {                       
                              print "\n\n~~SNIPPET_C~~$id~~\n";
-                           $curpage = cleanID($_REQUEST['curpage']);
+                             $curpage = cleanID($_REQUEST['curpage']); 
                              $snip_data=unserialize(io_readFile($this->metafn,false));
                              if(!array_key_exists($curpage,$snip_data['doc'])) {
                                  $snip_data['doc'][$curpage] = array($id);
