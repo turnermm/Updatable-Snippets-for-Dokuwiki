@@ -128,7 +128,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                                  $snip_data['snip'][$id] = array($curpage);
                              }
                              elseif(!in_array($curpage,$snip_data['snip'][$id])) {
-                                $snip_data['doc'][$id][] = $curpage; 
+                                $snip_data['snip'][$id][] = $curpage; 
                              }      
                              io_saveFile($this->metafn,serialize($snip_data));                             
                         }
