@@ -72,7 +72,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
          foreach ($snippets as $snip) {
              $snip_file = wikiFN($snip);          
              $snip_t = filemtime($snip_file);             
-             if($snip_t < $page_t) return;  // Is snippet older than age.  If not proceed to replacement
+             if($snip_t < $page_t) return;  // Is snippet older than page?  If newer proceed to replacement
              $replacement = io_readFile($snip_file); //get updated snippet
              $snip_id = preg_quote($snip);  
              $event->result = preg_replace_callback(
@@ -115,19 +115,20 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
                         if($event->data == 'snippet_update' ) {                       
                              print "\n\n~~SNIPPET_C~~$id~~\n";
-                             $curpage = cleanID($_REQUEST['curpage']); 
+                             $curpage = cleanID($_REQUEST['curpage']);   // $curpage is page into which snippet is being inserted
                              $snip_data=unserialize(io_readFile($this->metafn,false));
-                             if(!array_key_exists($curpage,$snip_data['doc'])) {
-                                 $snip_data['doc'][$curpage] = array($id);
+                             if(!array_key_exists($curpage,$snip_data['doc'])) {   // insert $curpage into doc array 
+                                 $snip_data['doc'][$curpage] = array($id);                // and put current snippet into its list of snippets
                              }
                              elseif(!in_array($id,$snip_data['doc'][$curpage])) {
-                                 array_push($id,$snip_data['doc'][$curpage]);              
+                                      // if already in doc array just  put current snippet in its list of snippets         
+                                  $snip_data['doc'][$curpage][]= $id;
                              }
-                             if(!array_key_exists($id,$snip_data['snip'])) {
+                             if(!array_key_exists($id,$snip_data['snip'])) {  //   do the same as above but in reverse for snippets
                                  $snip_data['snip'][$id] = array($curpage);
                              }
                              elseif(!in_array($curpage,$snip_data['snip'][$id])) {
-                                 array_push($curpage,$snip_data['doc'][$id]);              
+                                $snip_data['doc'][$id][] = $curpage; 
                              }      
                              io_saveFile($this->metafn,serialize($snip_data));                             
                         }
