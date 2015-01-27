@@ -215,4 +215,27 @@ jQuery(function(){
     snippets.attach(idx);
 });
 
+function update_snippets(which) {       
+        var debug = true;      
+        var params = "update=" +encodeURIComponent(which);
+        params += "&snippet="+ encodeURIComponent(JSINFO['id']);
+        jQuery.ajax({
+           url: DOKU_BASE + 'lib/plugins/snippets/exe/update.php',
+           async: true,
+           data: params,    
+           type: 'POST',
+           dataType: 'html',         
+           success: function(data){                 
+               if(debug) {            
+                  alert(data);
+               }
+              
+    }
+    });
+
+}
+
+ 
+ 
+
 // vim:ts=4:sw=4:et:enc=utf-8:

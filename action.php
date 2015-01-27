@@ -16,25 +16,28 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
     private $metafn;
       
     /**
-     *  Sets up database file for pages requiring updates
-     *  @author Myron Turner<turnermm02@shaw.ca>
-    */     
-    function __construct() {
-        $this->metafn = metaFN('snippets_upd','.ser');      
-        if(!file_exists($this->metafn)) {
-            $ar = array('snip'=>array(), 'doc'=>array());
-            io_saveFile($this->metafn,serialize($ar));
-        }
-    }
-    /**
      * Register callbacks
      */
     function register(&$controller) {
         $controller->register_hook('TOOLBAR_DEFINE','AFTER', $this, 'handle_toolbar_define');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call');
         $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');
+        $controller->register_hook('TPL_CONTENT_DISPLAY', 'AFTER', $this, 'handle_content_display');        
+        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'handle_started');        
+       
     }
-
+    
+        /**
+     *  Sets up database file for pages requiring updates
+     *  @author Myron Turner<turnermm02@shaw.ca>
+    */     
+     function handle_started(&$event, $param) {
+        $this->metafn = metaFN('snippets_upd','.ser');      
+        if(!file_exists($this->metafn)) {
+            $ar = array('snip'=>array(), 'doc'=>array());
+            io_saveFile($this->metafn,serialize($ar));
+        }
+    }
     /**
      * Adds the new toolbar item
      *
@@ -86,6 +89,21 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
           }
     }
     
+    function handle_content_display(&$event, $param) {
+        global $INFO;
+        $id = $INFO['id'];  
+      
+        $snip_data=unserialize(io_readFile($this->metafn,false));
+        if(!array_key_exists($id,$snip_data['snip'])) return;
+        $page_ids = $snip_data['snip'][$id];
+        
+       print("<div>\n");
+        foreach($page_ids as $id) {
+            print( '<a href="javascript:update_snippets(\''.$id .'\');">' .$id .'</a><br />' . NL);
+           
+        }
+        print("</div>");
+    }    
     /**
      * Handles the AJAX calls
      *
