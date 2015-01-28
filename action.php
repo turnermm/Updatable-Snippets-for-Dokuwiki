@@ -24,7 +24,6 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');
         $controller->register_hook('TPL_CONTENT_DISPLAY', 'AFTER', $this, 'handle_content_display');        
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'handle_started');        
-       
     }
     
         /**
@@ -91,18 +90,25 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
     
     function handle_content_display(&$event, $param) {
         global $INFO;
-        $id = $INFO['id'];  
+        $snipid = $INFO['id'];  
       
         $snip_data=unserialize(io_readFile($this->metafn,false));
-        if(!array_key_exists($id,$snip_data['snip'])) return;
-        $page_ids = $snip_data['snip'][$id];
+        if(!array_key_exists($snipid,$snip_data['snip'])) return;
+        $helper = $this->loadHelper('snippets');
+        $snip_time = $helper->mostRecentVersion($snipid,$modified);
+        echo "Snippet date: " . date('r',$snip_time) ."<br />" . NL;
+        $page_ids = $snip_data['snip'][$snipid];
         
-       print("<div>\n");
-        foreach($page_ids as $id) {
-            print( '<a href="javascript:update_snippets(\''.$id .'\');">' .$id .'</a><br />' . NL);
+        print("<div>\n<table>\n");
+        print('<tr><th>Page date<th>click to update</tr>');
+        foreach($page_ids as $pid) {
+            $page_time  = $helper->mostRecentVersion($pid,$modified);                
+            if($snip_time >= $page_time) {
            
+              print( "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');">' .$pid .'</a><tr />' . NL);
         }
-        print("</div>");
+        }
+        print("</table></div>");
     }    
     /**
      * Handles the AJAX calls
