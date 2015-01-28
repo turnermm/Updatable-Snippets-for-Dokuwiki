@@ -91,24 +91,29 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
     function handle_content_display(&$event, $param) {
         global $INFO;
         $snipid = $INFO['id'];  
-      
+        $table = array();
         $snip_data=unserialize(io_readFile($this->metafn,false));
         if(!array_key_exists($snipid,$snip_data['snip'])) return;
         $helper = $this->loadHelper('snippets');
         $snip_time = $helper->mostRecentVersion($snipid,$modified);
-        echo "Snippet date: " . date('r',$snip_time) ."<br />" . NL;
+        $table[] = "Snippet date: " . date('r',$snip_time) ."<br />";
+        $table[] ="<div>\n<table>\n";
+        $table[] ='<tr><th>Page date<th>click to update</tr>';
+        $bounding_rows = count($table);
         $page_ids = $snip_data['snip'][$snipid];
-        
-        print("<div>\n<table>\n");
-        print('<tr><th>Page date<th>click to update</tr>');
         foreach($page_ids as $pid) {
             $page_time  = $helper->mostRecentVersion($pid,$modified);                
             if($snip_time >= $page_time) {
+              $table[]= "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');">' .$pid .'</a><tr />';
+            }
+        }
+        $table[]="</table></div>";
            
-              print( "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');">' .$pid .'</a><tr />' . NL);
+        if(count($table) > ++$bounding_rows) {
+            foreach($table as $line) {
+                print $line  . NL;
         }
         }
-        print("</table></div>");
     }    
     /**
      * Handles the AJAX calls
