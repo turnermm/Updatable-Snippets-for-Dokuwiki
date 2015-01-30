@@ -45,6 +45,20 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
         return $modified;
   }    
 
+  function updateMetaTime($id,$snippet) {
+    global $ID;
+    if(empty($ID)) $ID = $id;    
+    $isref = p_get_metadata($id, 'relation isreferencedby');
+    $time = time();
+    $data = array();
+    
+    if(!is_array($isref)) {
+       $is_array= array();
+    }
+    $isref['snippets'][$snippet] = $time;       
+ 
+    $data['relation']['isreferencedby']=$isref;
+     p_set_metadata($id, $data);      
 }
-
+}
 // vim:ts=4:sw=4:et:
