@@ -66,7 +66,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
          $snip_data=unserialize(io_readFile($this->metafn,false));          
          if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
-     
+  
          global $replacement;  // will hold new version of snippet
      
          $snippets = $snip_data['doc'][$page_id];
@@ -74,14 +74,14 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
          foreach ($snippets as $snip) {
              $snip_file = wikiFN($snip);          
              $snip_t = filemtime($snip_file);             
-             if($snip_t < $page_t) return;  // Is snippet older than page?  If newer proceed to replacement
-             $replacement = io_readFile($snip_file); //get updated snippet
+             if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement       
+             $replacement =  trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile($snip_file)));             
              $snip_id = preg_quote($snip);  
              $event->result = preg_replace_callback(
-                "|(?<=~~SNIPPET_O~~$snip_id~~)(.*?)(?=~~SNIPPET_C~~$snip_id~~)|ms",
+                "|(?<=~~SNIPPET_O)\d*(~~$snip_id~~).*?(?=~~SNIPPET_C~~$snip_id~~)|ms",
                      function($matches){
-                         global $replacement;
-                         return "\n" .$replacement  . "\n";
+                         global $replacement;                         
+                         return  time()  . $matches[1]. "\n" .$replacement  . "\n";
                   }, 
                   $event->result
                 );           
@@ -96,18 +96,19 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         if(!array_key_exists($snipid,$snip_data['snip'])) return;
         $helper = $this->loadHelper('snippets');
         $snip_time = $helper->mostRecentVersion($snipid,$modified);
-        $table[] = "Snippet date: " . date('r',$snip_time) ."<br />";
-        $table[] ="<div>\n<table>\n";
+        $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) ."<br />";
+        $table[] ="<table>\n";
         $table[] ='<tr><th>Page date<th>click to update</tr>';
         $bounding_rows = count($table);
         $page_ids = $snip_data['snip'][$snipid];
         foreach($page_ids as $pid) {
             $page_time  = $helper->mostRecentVersion($pid,$modified);                
             if($snip_time >= $page_time) {
-              $table[]= "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');">' .$pid .'</a><tr />';
+              $span = str_replace(':','_',$pid);
+              $table[]= "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');"  id="' .$span . '">' .$pid .'</a><tr />';
             }
         }
-        $table[]="</table></div>";
+        $table[]="</table></div><p><span id='snip_updates_but' style='color:#2b73b7;'>Hide Updates Table</span></p>";
            
         if(count($table) > ++$bounding_rows) {
             foreach($table as $line) {

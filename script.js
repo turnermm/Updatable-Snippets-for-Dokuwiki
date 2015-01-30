@@ -232,8 +232,26 @@ function update_snippets(which) {
               
     }
     });
-
+   var span_id = '#' + which.replace(':','_');
+   jQuery(span_id).css({'color':'gray', 'text-decoration':'none', 'cursor': 'initial','pointer-events': 'none'});
 }
+
+jQuery(document).ready(function() {
+jQuery( "#snip_updates_but" ).click(function() { 
+    if(this.innerHTML.match(/Hide/)) {
+        this.innerHTML="Show Updates Table";
+}
+        else  this.innerHTML =  "Hide Updates Table";
+    jQuery( "#snippet_update_table" ).toggle();
+});
+jQuery( "#snip_updates_but" ).mouseover(function() { 
+      jQuery( "#snip_updates_but" ).css({'cursor': 'pointer', "font-weight": "bolder"});
+ });
+ jQuery( "#snip_updates_but" ).mouseout(function() { 
+      jQuery( "#snip_updates_but" ).css({'cursor': 'initial', "font-weight": "initial"});
+ });
+});
+ 
 
  
  
