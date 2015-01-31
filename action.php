@@ -72,17 +72,24 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
          $snip_data=unserialize(io_readFile($this->metafn,false));          
          if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
-  
+        $helper = $this->loadHelper('snippets');
          global $replacement;  // will hold new version of snippet
      
          $snippets = $snip_data['doc'][$page_id];
          $page_t = filemtime(wikiFN($page_id));
          foreach ($snippets as $snip) {
+            
              $snip_file = wikiFN($snip);          
              $snip_t = filemtime($snip_file);             
+
              if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement       
-             $helper = $this->loadHelper('snippets');
-             $helper->updateMetaTime($page_id, $snip);              
+
+             if($helper->snippetWasUpdated($page_id,$snip)) {
+                  msg('continuing');
+                   continue;
+             }
+             msg('updating' ,2);  
+            // $helper->updateMetaTime($page_id, $snip);              
              $replacement =  trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile($snip_file)));             
              $snip_id = preg_quote($snip);  
              $event->result = preg_replace_callback(
@@ -100,7 +107,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         global $INFO;
         $snipid = $INFO['id'];  
         $table = array();
-      //  $this->metafn = metaFN('snippets_upd','.ser');      
+           
         $snip_data=unserialize(io_readFile($this->metafn,false));
         if(!array_key_exists($snipid,$snip_data['snip'])) return;
         $helper = $this->loadHelper('snippets');
