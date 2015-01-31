@@ -20,6 +20,7 @@ echo "date modified: " . date('r',$modified) . "\n";
 echo "most_recent: " . date('r',$most_recent) . "\n";
 echo 'updating: ' . wikiFN($id) . "\n";
 if($snippet) echo 'snippet: ' .wikiFN($snippet);
+$helper->isNewSnippet($id, $snippet) ;
 echo "\ndone\n";
 $helper->updateMetaTime($id, $snippet);
 touch( wikiFN($id));

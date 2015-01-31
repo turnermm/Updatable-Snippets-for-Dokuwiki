@@ -45,11 +45,22 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
         return $modified;
   }    
 
+   function isNewSnippet($id, $snippet) {       
+       $isref = p_get_metadata($id, 'relation isreferencedby' );
+       $snip_time = $isref['snippets'][$snippet] ;
+       $time_stamp = $this->mostRecentVersion($snippet, $modified);
+
+        echo "\n$id sniptime($snip_time) equals $snippet time_stamp($time_stamp ): ";
+        if($snip_time == $time_stamp) 
+        echo "true\n";
+        else echo "false\n";
+   }
+   
   function updateMetaTime($id,$snippet) {
     global $ID;
     if(empty($ID)) $ID = $id;    
     $isref = p_get_metadata($id, 'relation isreferencedby');
-    $time = time();
+    $time = $this->mostRecentVersion($snippet, $modified) ;
     $data = array();
     
     if(!is_array($isref)) {
