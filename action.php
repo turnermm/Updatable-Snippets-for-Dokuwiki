@@ -68,40 +68,11 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * @author Myron Turner <turnermm02@shaw.ca>
      */    
      function handle_wiki_read(&$event,$param) {         
-   //  $this->metafn = metaFN('snippets_upd','.ser');      
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
-         $snip_data=unserialize(io_readFile($this->metafn,false));          
-         if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
         $helper = $this->loadHelper('snippets');
-         global $replacement;  // will hold new version of snippet
-     
-         $snippets = $snip_data['doc'][$page_id];
-         $page_t = filemtime(wikiFN($page_id));
-         foreach ($snippets as $snip) {
-            
-             $snip_file = wikiFN($snip);          
-             $snip_t = filemtime($snip_file);             
+        $helper->insertSnippet($event->result, $page_id);
+     }
 
-             if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement       
-
-             if($helper->snippetWasUpdated($page_id,$snip)) {
-                  msg('continuing');
-                   continue;
-             }
-             msg('updating' ,2);  
-            // $helper->updateMetaTime($page_id, $snip);              
-             $replacement =  trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile($snip_file)));             
-             $snip_id = preg_quote($snip);  
-             $event->result = preg_replace_callback(
-                "|(?<=~~SNIPPET_O)\d*(~~$snip_id~~).*?(?=~~SNIPPET_C~~$snip_id~~)|ms",
-                     function($matches){
-                         global $replacement;                         
-                         return  time()  . $matches[1]. "\n" .$replacement  . "\n";  // time() makes each update unique for renderer 
-                  }, 
-                  $event->result
-                );           
-          }
-    }
     
     function handle_content_display(&$event, $param) {
         global $INFO;

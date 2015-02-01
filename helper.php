@@ -11,6 +11,16 @@ if(!defined('DOKU_INC')) die();
 
 class helper_plugin_snippets extends DokuWiki_Plugin {
 
+    private $metafn;
+
+    function __construct() {
+        $this->metafn = metaFN('snippets_upd','.ser');
+        if(!file_exists($this->metafn)) {
+            $ar = array('snip'=>array(), 'doc'=>array());
+            io_saveFile($this->metafn,serialize($ar));
+        }
+    }
+    
     /**
      * Return info about supported methods in this Helper Plugin
      *
@@ -55,9 +65,8 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
         if($snip_time === $time_stamp) 
            $res = "true";
         else $res = "false";
-        msg("\n$id sniptime($snip_time) equals $snippet time_stamp($time_stamp ): $res\n");
+     //   msg("\n$id sniptime($snip_time) equals $snippet time_stamp($time_stamp ): $res\n");
         return $snip_time  ==  $time_stamp;
-       
    }
    
   function updateMetaTime($id,$snippet) {
@@ -75,5 +84,43 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
     $data['relation']['isreferencedby']=$isref;
      p_set_metadata($id, $data);      
 }
+    
+    
+    function insertSnippet(&$result, $page_id) {
+
+         $snip_data=unserialize(io_readFile($this->metafn,false));          
+         if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
+
+         global $replacement;  // will hold new version of snippet
+         
+         $snippets = $snip_data['doc'][$page_id];
+         $page_t = filemtime(wikiFN($page_id));
+        // msg('<pre>' .print_r($snippets,true) .'</pre>');
+         foreach ($snippets as $snip) {            
+             $snip_file = wikiFN($snip);          
+             $snip_t = filemtime($snip_file);     
+
+             if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement    
+
+             if($this->snippetWasUpdated($page_id,$snip)) {
+                  msg('continuing');
+                   continue;
+             }
+                         
+             $replacement =  trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile($snip_file)));             
+             $snip_id = preg_quote($snip);  
+             $result = preg_replace_callback(
+                "|(?<=~~SNIPPET_O)\d*(~~$snip_id~~).*?(?=~~SNIPPET_C~~$snip_id~~)|ms",
+                     function($matches){
+                         global $replacement;                         
+                         return  time()  . $matches[1]. "\n" .$replacement  . "\n";  // time() makes each update unique for renderer 
+                  }, 
+                  $result
+                );           
+          }
+          
+    }
+    
+
 }
 // vim:ts=4:sw=4:et:
