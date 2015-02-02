@@ -62,18 +62,18 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
           $this->updateMetaTime($id,$snippet);
        }
        $time_stamp = $this->mostRecentVersion($snippet, $modified);
-        if($snip_time === $time_stamp) 
-           $res = "true";
-        else $res = "false";
-     //   msg("\n$id sniptime($snip_time) equals $snippet time_stamp($time_stamp ): $res\n");
+ 
+       // msg("found in $id =>$snip_time  --  found in $snippet =>$time_stamp");
         return $snip_time  ==  $time_stamp;
    }
    
-  function updateMetaTime($id,$snippet) {
+    function updateMetaTime($id,$snippet, $set_time = "") {
     global $ID;
     if(empty($ID)) $ID = $id;    
+        if(!$snippet) return;
     $isref = p_get_metadata($id, 'relation isreferencedby');
-    $time = $this->mostRecentVersion($snippet, $modified) ;
+        $time = $set_time ? $set_time : $this->mostRecentVersion($snippet, $modified) ; 
+      
     $data = array();
     
     if(!is_array($isref)) {
@@ -95,18 +95,18 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
          
          $snippets = $snip_data['doc'][$page_id];
          $page_t = filemtime(wikiFN($page_id));
-        // msg('<pre>' .print_r($snippets,true) .'</pre>');
+        
          foreach ($snippets as $snip) {            
              $snip_file = wikiFN($snip);          
              $snip_t = filemtime($snip_file);     
 
-             if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement    
+            // if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement    
 
-             if($this->snippetWasUpdated($page_id,$snip)) {
-                  msg('continuing');
+             if($snip_t < $page_t && $this->snippetWasUpdated($page_id,$snip)) {  
+                   //echo "$snip: continuing\n";
                    continue;
              }
-                         
+              //echo("$snip: inserting\n");
              $replacement =  trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile($snip_file)));             
              $snip_id = preg_quote($snip);  
              $result = preg_replace_callback(

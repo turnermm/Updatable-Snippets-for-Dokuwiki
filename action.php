@@ -23,6 +23,8 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call');
         $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');
        $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'handle_content_display');
+        $controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'handle_wiki_write');
+     
     }
     
         /**
@@ -68,11 +70,40 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * @author Myron Turner <turnermm02@shaw.ca>
      */    
      function handle_wiki_read(&$event,$param) {         
+       if($event->data[1]) {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
+        }
+        else {
+           $page_id = $event->data[2];
+        }
         $helper = $this->loadHelper('snippets');
         $helper->insertSnippet($event->result, $page_id);
      }
 
+    function handle_wiki_write(&$event, $param) {
+       if(! $event->result) return;  //write fail
+       
+       if($event->data[1]) {
+        $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":"); 
+        }
+        else {
+           $page_id = $event->data[2];
+        }
+         
+        $snip_data=unserialize(io_readFile($this->metafn,false));                                                
+       
+        if(!array_key_exists($page_id,$snip_data['doc']))  return;
+        $snippets = $snip_data['doc'][$page_id];
+      
+        $helper = $this->loadHelper('snippets');    
+        if(preg_match('#data/pages/#', $event->data[0][0])) {  //make sure this is data/page not meta/attic save                  
+            foreach($snippets as $snip) {                          
+                $helper->updateMetaTime($page_id,$snip) ;
+            }
+        }
+        
+        
+    }
     
     function handle_content_display(&$event, $param) {
         global $INFO;
