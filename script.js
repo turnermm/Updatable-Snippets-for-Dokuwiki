@@ -34,7 +34,12 @@ snippets = {
 
             var kolbl       = document.createElement('label');
             kolbl.htmlFor   = 'snippets__keepopen';
+            if(LANG['keepopen']) {
             kolbl.innerHTML = " " + LANG['keepopen'];
+            }
+            else {
+            kolbl.innerHTML = " " + LANG['plugins']['snippets']['keepopen'];
+            }
 
             var kobr = document.createElement('br');
 

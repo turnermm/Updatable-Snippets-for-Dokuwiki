@@ -37,14 +37,39 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
                 'return' => array('timestamp' => 'integer')
             ),
             array(
-                // and more supported methods...
-            )
+                'name' => 'snippetWasUpdated',
+                'desc' => 'check if snippet inserted a page was updated to most recent version',
+                'params' => array( 'id'=>'string', 'snippet'=>'string'),
+                'return' =>array('timstamp'=>'boolean')
+            ),
+           array(
+                'name' => 'updateMetaTime',
+                'desc' => 'sets and updates tiestamp of snippet in metafile of page where snippet ia inserted',
+                'params' => array(
+                    'id' => 'string',
+                    'snippet' => 'string',
+                    'set_time' => 'int'
+                ),
+                'return' =>array()
+            ), 
+           array(
+                'name' => 'insertSnippet',
+                'desc' => 'inserts updated snippet into page',
+                'params' => array(
+                  'result (reference)' => 'string',
+                  'page_id' => 'string'
+                ),
+                'return' =>array()
+            ),            
         );
     }
 
     /**
      *  If the metadata shows that the file has been restored from an earlier version, that is the most recent
      *  version; otherwise the last modified date is the most recent version
+     *  @param string  $id  id of page to be checked for most recent version
+     *  @modified int  timestamp
+     *  @return int timestamp  
     */     
     function mostRecentVersion($id, &$modified) {
         $modified = p_get_metadata($id, 'date modified');            
@@ -54,7 +79,13 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
         }
         return $modified;
   }    
-
+    /**
+      *  Checks the most recent version of  snippet against the timestamp for snippet
+      *  stored in the meta file for page into which the snippet has been inserted
+      *  If the timestamps are the same then the snippet has been updated
+      *  @param $id string  id of page where snippet was inserted
+      *  @param snippet string  page id of snippet
+    */      
    function snippetWasUpdated($id, $snippet) {       
        $isref = p_get_metadata($id, 'relation isreferencedby' );
        $snip_time = $isref['snippets'][$snippet] ;
@@ -66,12 +97,15 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
         return $snip_time  ==  $time_stamp;
    }
    
-    function updateMetaTime($id,$snippet, $set_time = "") {
+    /**
+      *  Updates time stamp of snippet in metafile of pf where snippet is inserted
+    */  
+    function updateMetaTime($id,$snippet) {
     global $ID;
     if(empty($ID)) $ID = $id;    
         if(!$snippet) return;
     $isref = p_get_metadata($id, 'relation isreferencedby');
-        $time = $set_time ? $set_time : $this->mostRecentVersion($snippet, $modified) ; 
+        $time =  $this->mostRecentVersion($snippet, $modified) ; 
       
     $data = array();
     
@@ -84,7 +118,11 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
      p_set_metadata($id, $data);      
 }
     
-    
+    /** 
+      * Inserts updated snippets in page after checking to see if snippets have been updated
+      * @param result   reference to string that holds the page contents
+      * @param page_id  string  
+    */  
     function insertSnippet(&$result, $page_id) {
 
          $snip_data=unserialize(io_readFile($this->metafn,false));          
@@ -117,6 +155,9 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
           
     }
     
+   function getMetaFileName() {
+       return $this->metafn;
+   }
 
 }
 // vim:ts=4:sw=4:et:

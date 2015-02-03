@@ -104,7 +104,11 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         
         
     }
-    
+    /*
+      *  After a snippet has been revised, this outputs table of links on the snippet page itemizing those pages where this 
+      * snippet is inserted.  The links implement an ajax call to exe/update.php where the snippets can be updated
+      * and the timestamps of the updated snippets revised in the metafile of the pages where snippet is inserted
+   */   
     function handle_content_display(&$event, $param) {
         global $INFO;
         $snipid = $INFO['id'];  
@@ -145,7 +149,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      */
     function handle_ajax_call(&$event, $param) {
         global $lang;
-        //$this->metafn = metaFN('snippets_upd','.ser');      
+        
         if($event->data == 'snippet_preview' or $event->data == 'snippet_insert'  or $event->data == 'snippet_update' ) {
             $event->preventDefault();  
             $event->stopPropagation();
