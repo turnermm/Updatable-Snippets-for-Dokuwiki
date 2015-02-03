@@ -16,23 +16,32 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
     private $metafn;
       
     /**
-     *  Sets up database file for pages requiring updates
-     *  @author Myron Turner<turnermm02@shaw.ca>
-    */     
-    function __construct() {
-        $this->metafn = metaFN('snippets_upd','.ser');      
-        if(!file_exists($this->metafn)) {
-            $ar = array('snip'=>array(), 'doc'=>array());
-            io_saveFile($this->metafn,serialize($ar));
-        }
-    }
-    /**
      * Register callbacks
      */
     function register(&$controller) {
         $controller->register_hook('TOOLBAR_DEFINE','AFTER', $this, 'handle_toolbar_define');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call');
         $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');
+       $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'handle_content_display');
+        $controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'handle_wiki_write');
+     
+    }
+    
+        /**
+     *  Sets up database file for pages requiring updates
+     *  @author Myron Turner<turnermm02@shaw.ca>
+    */     
+
+    /**
+     *  Sets up database file for pages requiring updates
+     *  @author Myron Turner<turnermm02@shaw.ca>
+    */
+    function __construct() {
+        $this->metafn = metaFN('snippets_upd','.ser');
+        if(!file_exists($this->metafn)) {
+            $ar = array('snip'=>array(), 'doc'=>array());
+            io_saveFile($this->metafn,serialize($ar));
+        }
     }
 
     /**
@@ -61,31 +70,77 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * @author Myron Turner <turnermm02@shaw.ca>
      */    
      function handle_wiki_read(&$event,$param) {         
+       if($event->data[1]) {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
-         $snip_data=unserialize(io_readFile($this->metafn,false));          
-         if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
-     
-         global $replacement;  // will hold new version of snippet
-     
-         $snippets = $snip_data['doc'][$page_id];
-         $page_t = filemtime(wikiFN($page_id));
-         foreach ($snippets as $snip) {
-             $snip_file = wikiFN($snip);          
-             $snip_t = filemtime($snip_file);             
-             if($snip_t < $page_t) return;  // Is snippet older than page?  If newer proceed to replacement
-             $replacement = io_readFile($snip_file); //get updated snippet
-             $snip_id = preg_quote($snip);  
-             $event->result = preg_replace_callback(
-                "|(?<=~~SNIPPET_O~~$snip_id~~)(.*?)(?=~~SNIPPET_C~~$snip_id~~)|ms",
-                     function($matches){
-                         global $replacement;
-                         return "\n" .$replacement  . "\n";
-                  }, 
-                  $event->result
-                );           
-          }
+        }
+        else {
+           $page_id = $event->data[2];
+        }
+        $helper = $this->loadHelper('snippets');
+        $helper->insertSnippet($event->result, $page_id);
+     }
+
+    function handle_wiki_write(&$event, $param) {
+       if(! $event->result) return;  //write fail
+       
+       if($event->data[1]) {
+        $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":"); 
+        }
+        else {
+           $page_id = $event->data[2];
+        }
+         
+        $snip_data=unserialize(io_readFile($this->metafn,false));                                                
+       
+        if(!array_key_exists($page_id,$snip_data['doc']))  return;
+        $snippets = $snip_data['doc'][$page_id];
+      
+        $helper = $this->loadHelper('snippets');    
+        if(preg_match('#data/pages/#', $event->data[0][0])) {  //make sure this is data/page not meta/attic save                  
+            foreach($snippets as $snip) {                          
+                $helper->updateMetaTime($page_id,$snip) ;
+            }
+        }
+        
+        
     }
-    
+    /*
+      *  After a snippet has been revised, this outputs table of links on the snippet page itemizing those pages where this 
+      * snippet is inserted.  The links implement an ajax call to exe/update.php where the snippets can be updated
+      * and the timestamps of the updated snippets revised in the metafile of the pages where snippet is inserted
+   */   
+    function handle_content_display(&$event, $param) {
+        global $INFO;
+        $snipid = $INFO['id'];  
+        $table = array();
+           
+        $snip_data=unserialize(io_readFile($this->metafn,false));
+        if(!array_key_exists($snipid,$snip_data['snip'])) return;
+        $helper = $this->loadHelper('snippets');
+        $snip_time= filemtime(wikiFN($snipid));
+   
+        $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) .'<br />';
+        $table[]='<form><input type="checkbox" name="prune" value="prune" id="snip_prune"> '. $this->getLang('remove') . '</form><br />';
+        $table[] ="<table>\n";
+        $table[] ='<tr><th>Page date<th>' . $this->getLang('click_to_update') .'</tr>';
+        $bounding_rows = count($table);
+        $page_ids = $snip_data['snip'][$snipid];
+        foreach($page_ids as $pid) {
+           $page_time= filemtime(wikiFN($pid));
+            if($snip_time > $page_time) {
+              $span = str_replace(':','_',$pid);
+              $table[]= "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');"  id="' .$span . '">' .$pid .'</a><tr />';
+            }
+        }
+        $table[]='</table></div>';
+        $table[]='<p><span id="snip_updates_but" style="color:#2b73b7;">' .$this->getLang('hide_table') . '</span></p>';
+           
+        if(count($table) > $bounding_rows+2) {
+            foreach($table as $line) {
+                print $line  . NL;
+        }
+        }
+    }    
     /**
      * Handles the AJAX calls
      *
@@ -94,6 +149,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      */
     function handle_ajax_call(&$event, $param) {
         global $lang;
+        
         if($event->data == 'snippet_preview' or $event->data == 'snippet_insert'  or $event->data == 'snippet_update' ) {
             $event->preventDefault();  
             $event->stopPropagation();
@@ -109,17 +165,20 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                 
                     if(auth_quickaclcheck($id) >= AUTH_READ) {
                         if($event->data == 'snippet_update' ) {
-                           print "\n~~SNIPPET_O~~$id~~\n";
+                          $tm = time();
+                           print "\n~~SNIPPET_O${tm}~~$id~~\n";
+                            print('data='.$event->data);
                         }
                         print "\n\n"; // always start on a new line (just to be safe)
                         print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
+                       
                         if($event->data == 'snippet_update' ) {                       
                              print "\n\n~~SNIPPET_C~~$id~~\n";
                              $curpage = cleanID($_REQUEST['curpage']);   // $curpage is page into which snippet is being inserted
-                             $snip_data=unserialize(io_readFile($this->metafn,false));
+                             $snip_data=unserialize(io_readFile($this->metafn,false));                                        
                              if(!array_key_exists($curpage,$snip_data['doc'])) {   // insert $curpage into doc array 
                                  $snip_data['doc'][$curpage] = array($id);                // and put current snippet into its list of snippets
-                             }
+                            }                          
                              elseif(!in_array($id,$snip_data['doc'][$curpage])) {
                                       // if already in doc array just  put current snippet in its list of snippets         
                                   $snip_data['doc'][$curpage][]= $id;

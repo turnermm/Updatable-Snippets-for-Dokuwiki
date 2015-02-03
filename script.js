@@ -34,7 +34,12 @@ snippets = {
 
             var kolbl       = document.createElement('label');
             kolbl.htmlFor   = 'snippets__keepopen';
+            if(LANG['keepopen']) {
             kolbl.innerHTML = " " + LANG['keepopen'];
+            }
+            else {
+            kolbl.innerHTML = " " + LANG['plugins']['snippets']['keepopen'];
+            }
 
             var kobr = document.createElement('br');
 
@@ -54,7 +59,7 @@ snippets = {
             var updl       = document.createElement('label');
             var kobr2 = document.createElement('br');            
             updl.htmlFor   = 'snippets__update';
-            updl.innerHTML =  " Check for snippet updates"; // needs language entry
+            updl.innerHTML =  LANG['plugins']['snippets']['check_for_updates'];  //" Check for snippet updates"; // needs language entry
           
             opts.append(updatebox); 
             opts.append(updl);
@@ -214,5 +219,49 @@ jQuery(function(){
     if(idx.length == 0) return;
     snippets.attach(idx);
 });
+
+function update_snippets(which) {       
+  var prune = document.getElementById('snip_prune');
+
+        var debug = true;      
+        var params = "update=" +encodeURIComponent(which);
+        params += "&snippet="+ encodeURIComponent(JSINFO['id']);
+        if(prune.checked) params += "&prune=" +encodeURIComponent('prune');
+     
+        jQuery.ajax({
+           url: DOKU_BASE + 'lib/plugins/snippets/exe/update.php',
+           async: true,
+           data: params,    
+           type: 'POST',
+           dataType: 'html',         
+           success: function(data){                 
+               if(debug) {            
+                  alert(data);
+               }
+              
+    }
+    });
+   var span_id = '#' + which.replace(':','_');
+   jQuery(span_id).css({'color':'gray', 'text-decoration':'none', 'cursor': 'initial','pointer-events': 'none'});
+}
+
+jQuery(document).ready(function() {
+jQuery( "#snip_updates_but" ).click(function() { 
+    if(this.innerHTML.match(/Hide/)) {
+        this.innerHTML="Show Updates Table";
+    } else  this.innerHTML =  "Hide Updates Table";
+    jQuery( "#snippet_update_table" ).toggle();
+});
+jQuery( "#snip_updates_but" ).mouseover(function() { 
+      jQuery( "#snip_updates_but" ).css({'cursor': 'pointer', "font-weight": "bolder"});
+ });
+ jQuery( "#snip_updates_but" ).mouseout(function() { 
+      jQuery( "#snip_updates_but" ).css({'cursor': 'initial', "font-weight": "initial"});
+ });
+});
+ 
+
+ 
+ 
 
 // vim:ts=4:sw=4:et:enc=utf-8:
