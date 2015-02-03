@@ -1,8 +1,8 @@
 # General Plugin Info do not edit
 base   snippets
-author Michael Klier
+author Michael Klier/Myron Turner
 email  chi@chimeric.de
 date   2014-05-28
 name   Snippets Plugin
-desc   Provides a toolbar button+popup for nice template insertion.
+desc   Provides toolbar button+popup for template insertion; can track and insert sinppet updates
 url    http://www.dokuwiki.org/plugin:snippets
