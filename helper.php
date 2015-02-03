@@ -100,13 +100,10 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
              $snip_file = wikiFN($snip);          
              $snip_t = filemtime($snip_file);     
 
-            // if($snip_t < $page_t)  continue;  // Is snippet older than page?  If newer proceed to replacement    
-
              if($snip_t < $page_t && $this->snippetWasUpdated($page_id,$snip)) {  
-                   //echo "$snip: continuing\n";
                    continue;
              }
-              //echo("$snip: inserting\n");
+             
              $replacement =  trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile($snip_file)));             
              $snip_id = preg_quote($snip);  
              $result = preg_replace_callback(

@@ -7,6 +7,8 @@ if(isset($_REQUEST) && !empty($_REQUEST['update'])) {
     $id = urldecode($_REQUEST['update']);  // file to update
     $snippet = urldecode($_REQUEST['snippet']);
     echo $id ."\n";
+    echo $snippet ."\n";
+    echo $prune ."\n";   
 }
 else {
   $id = $argv[1];
@@ -28,6 +30,29 @@ if(array_key_exists($page_id,$snip_data['doc'])) {
 }
 io_saveFile($page,$result);
 
+if(isset($_REQUEST['prune'])) {
+   snippets_prune_meta($id);
+}
+
+function snippets_prune_meta($id) {
+    $data = p_get_metadata($id, 'relation isreferencedby');
+    $snippets = array_keys($data['snippets']);
+    $file=wikiFN($id);
+    $text = file_get_contents($file);
+    preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);
+    $intersect = array_intersect($matches[1],$snippets);
+
+    $isref = array('snippets'=>array());
+
+    foreach ($intersect as $i) {
+        $isref['snippets'][$i]=$data['snippets'][$i];
+    }
+
+    $data = array();
+     $data['relation']['isreferencedby']=$isref;
+    echo print_r($data,true);
+     p_set_metadata($id, $data);
+} 
 exit;
 
 

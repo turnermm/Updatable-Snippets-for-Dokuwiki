@@ -115,7 +115,8 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $helper = $this->loadHelper('snippets');
         $snip_time= filemtime(wikiFN($snipid));
    
-        $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) ."<br />";
+        $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) .'<br />';
+        $table[]='<form><input type="checkbox" name="prune" value="prune" id="snip_prune"> '.  'Remove unused snippet entries from metafile' . '</form><br />';
         $table[] ="<table>\n";
         $table[] ='<tr><th>Page date<th>click to update</tr>';
         $bounding_rows = count($table);
@@ -127,7 +128,8 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
               $table[]= "<tr><td>" . date('r',$page_time) . '<td><a href="javascript:update_snippets(\''.$pid .'\');"  id="' .$span . '">' .$pid .'</a><tr />';
             }
         }
-        $table[]="</table></div><p><span id='snip_updates_but' style='color:#2b73b7;'>Hide Updates Table</span></p>";
+        $table[]='</table></div>';
+        $table[]='<p><span id="snip_updates_but" style="color:#2b73b7;">Hide Updates Table</span></p>';
            
         if(count($table) > ++$bounding_rows) {
             foreach($table as $line) {

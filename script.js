@@ -216,9 +216,13 @@ jQuery(function(){
 });
 
 function update_snippets(which) {       
+  var prune = document.getElementById('snip_prune');
+
         var debug = true;      
         var params = "update=" +encodeURIComponent(which);
         params += "&snippet="+ encodeURIComponent(JSINFO['id']);
+        if(prune.checked) params += "&prune=" +encodeURIComponent('prune');
+     
         jQuery.ajax({
            url: DOKU_BASE + 'lib/plugins/snippets/exe/update.php',
            async: true,
@@ -240,8 +244,7 @@ jQuery(document).ready(function() {
 jQuery( "#snip_updates_but" ).click(function() { 
     if(this.innerHTML.match(/Hide/)) {
         this.innerHTML="Show Updates Table";
-}
-        else  this.innerHTML =  "Hide Updates Table";
+    } else  this.innerHTML =  "Hide Updates Table";
     jQuery( "#snippet_update_table" ).toggle();
 });
 jQuery( "#snip_updates_but" ).mouseover(function() { 
