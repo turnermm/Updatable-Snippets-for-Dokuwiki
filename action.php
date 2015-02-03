@@ -135,7 +135,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $table[]='</table></div>';
         $table[]='<p><span id="snip_updates_but" style="color:#2b73b7;">' .$this->getLang('hide_table') . '</span></p>';
            
-        if(count($table) > ++$bounding_rows) {
+        if(count($table) > $bounding_rows+2) {
             foreach($table as $line) {
                 print $line  . NL;
         }
