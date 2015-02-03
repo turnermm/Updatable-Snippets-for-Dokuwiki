@@ -1,10 +1,8 @@
 All documentation for the Snippets Plugin is available online at
 http://dokuwiki.org/plugin:snippets
+author: Michael Klier 2009 - 2010
+author: Myron Turner  2015
 
-(c) 2009 - 2010 by Michael Klier <dokuwiki@chimeric.de>
-See COPYING for license info.
-
-This version of snippets plugin will enable user to choose to automatically have files with embedded
-snippets to update the snippet text when the snippet file is changed.  
+This version of the snippets plugin enables user to choose have files with embedded snippets automatically updated when the snippet file is changed.  
 
 
