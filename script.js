@@ -54,7 +54,7 @@ snippets = {
             var updl       = document.createElement('label');
             var kobr2 = document.createElement('br');            
             updl.htmlFor   = 'snippets__update';
-            updl.innerHTML =  " Check for snippet updates"; // needs language entry
+            updl.innerHTML =  LANG['plugins']['snippets']['check_for_updates'];  //" Check for snippet updates"; // needs language entry
           
             opts.append(updatebox); 
             opts.append(updl);

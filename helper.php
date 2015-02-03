@@ -63,7 +63,6 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
        }
        $time_stamp = $this->mostRecentVersion($snippet, $modified);
  
-       // msg("found in $id =>$snip_time  --  found in $snippet =>$time_stamp");
         return $snip_time  ==  $time_stamp;
    }
    

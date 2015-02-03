@@ -116,9 +116,9 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $snip_time= filemtime(wikiFN($snipid));
    
         $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) .'<br />';
-        $table[]='<form><input type="checkbox" name="prune" value="prune" id="snip_prune"> '.  'Remove unused snippet entries from metafile' . '</form><br />';
+        $table[]='<form><input type="checkbox" name="prune" value="prune" id="snip_prune"> '. $this->getLang('remove') . '</form><br />';
         $table[] ="<table>\n";
-        $table[] ='<tr><th>Page date<th>click to update</tr>';
+        $table[] ='<tr><th>Page date<th>' . $this->getLang('click_to_update') .'</tr>';
         $bounding_rows = count($table);
         $page_ids = $snip_data['snip'][$snipid];
         foreach($page_ids as $pid) {
@@ -129,7 +129,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
             }
         }
         $table[]='</table></div>';
-        $table[]='<p><span id="snip_updates_but" style="color:#2b73b7;">Hide Updates Table</span></p>';
+        $table[]='<p><span id="snip_updates_but" style="color:#2b73b7;">' .$this->getLang('hide_table') . '</span></p>';
            
         if(count($table) > ++$bounding_rows) {
             foreach($table as $line) {
