@@ -223,7 +223,7 @@ jQuery(function(){
 function update_snippets(which) {       
   var prune = document.getElementById('snip_prune');
 
-        var debug = true;      
+        var debug = false;      
         var params = "update=" +encodeURIComponent(which);
         params += "&snippet="+ encodeURIComponent(JSINFO['id']);
         if(prune.checked) params += "&prune=" +encodeURIComponent('prune');

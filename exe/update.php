@@ -41,7 +41,7 @@ if(array_key_exists($id,$snip_data['doc'])) {
 io_saveFile($page,$result);  // save updated page
 
 
-// if requested prune out dead timestamps
+// if requested prune out dead timestamps: default is to prune
 if(isset($_REQUEST['prune'])) {
    snippets_prune_meta($id);
 }
