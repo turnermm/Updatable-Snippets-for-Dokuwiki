@@ -23,7 +23,8 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call');
         $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');
        $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'handle_content_display');
-        $controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'handle_wiki_write');
+        $controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'handle_wiki_write',array('after'=>true,'before'=>false));
+        $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handle_wiki_write', array('before'=>true, 'after'=>false));        
      
     }
     
@@ -80,8 +81,16 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $helper->insertSnippet($event->result, $page_id);
      }
 
+   
+    
+    /**
+      *  Update the array of snippet timestamps in meta files of pages where snippets are inserted 
+      *
+      * @author Myron Turner <turnermm02@shaw.ca>       
+     */
     function handle_wiki_write(&$event, $param) {
-       if(! $event->result) return;  //write fail
+
+       if(! $event->result && $param['after']) return;  //write fail
        
        if($event->data[1]) {
         $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":"); 
@@ -94,6 +103,14 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
        
         if(!array_key_exists($page_id,$snip_data['doc']))  return;
         $snippets = $snip_data['doc'][$page_id];
+        if($param['before']) {
+           preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$event->data[0][1],$matches);
+          $intersect = array_intersect($snippets,$matches[1]);
+          if(!empty($intersect)) {
+              $snip_data['doc'][$page_id] = $intersect;
+               io_saveFile($this->metafn,serialize($snip_data));
+          }
+        }
       
         $helper = $this->loadHelper('snippets');    
         if(preg_match('#data/pages/#', $event->data[0][0])) {  //make sure this is data/page not meta/attic save                  

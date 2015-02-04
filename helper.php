@@ -98,7 +98,7 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
    }
    
     /**
-      *  Updates time stamp of snippet in metafile of pf where snippet is inserted
+      *  Updates time stamp of snippet in metafile of page where snippet is inserted
     */  
     function updateMetaTime($id,$snippet) {
     global $ID;
