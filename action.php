@@ -110,6 +110,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
               $snip_data['doc'][$page_id] = $intersect;
                io_saveFile($this->metafn,serialize($snip_data));
           }
+          return;
         }
       
         $helper = $this->loadHelper('snippets');    
