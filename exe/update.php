@@ -62,7 +62,7 @@ function snippets_prune_meta($id) {
 
     $data = array();
      $data['relation']['isreferencedby']=$isref;
-    echo print_r($data,true);
+    
      p_set_metadata($id, $data);
 } 
 exit;
