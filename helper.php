@@ -155,6 +155,22 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
           
     }
     
+    /*
+      *    create new page array for a snippet entry in the database
+      *
+      *    @ $pages  array   page ids currently held for snippet  
+      *    @ $id  string        id of current page
+    */
+    function getPageArray($pages, $id) {   
+        $id_array = array();         
+        foreach($pages as $page_id) {
+            if($id != $page_id) {  // remove current page from array of pages held by the snippet
+                $id_array[] = $page_id;
+            }
+        }       
+        return $id_array;
+    }
+   
    function getMetaFileName() {
        return $this->metafn;
    }
