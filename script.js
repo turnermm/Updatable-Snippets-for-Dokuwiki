@@ -59,7 +59,7 @@ snippets = {
             var updl       = document.createElement('label');
             var kobr2 = document.createElement('br');            
             updl.htmlFor   = 'snippets__update';
-            updl.innerHTML =  LANG['plugins']['snippets']['check_for_updates'];  //" Check for snippet updates"; // needs language entry
+            updl.innerHTML = " " + LANG['plugins']['snippets']['check_for_updates'];  //" Check for snippet updates"; // needs language entry
           
             opts.append(updatebox); 
             opts.append(updl);
@@ -238,7 +238,6 @@ function update_snippets(which) {
                if(debug) {            
                   alert(data);
                }
-              
     }
     });
    var span_id = '#' + which.replace(':','_');
@@ -258,6 +257,7 @@ jQuery( "#snip_updates_but" ).mouseover(function() {
  jQuery( "#snip_updates_but" ).mouseout(function() { 
       jQuery( "#snip_updates_but" ).css({'cursor': 'initial', "font-weight": "initial"});
  });
+     DokuCookie.setValue('snippets_update',1);
 });
  
 

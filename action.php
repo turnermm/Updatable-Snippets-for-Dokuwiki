@@ -138,7 +138,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $snip_time= filemtime(wikiFN($snipid));
    
         $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) .'<br />';
-        $table[]='<form><input type="checkbox" name="prune" value="prune" id="snip_prune" checked> '. $this->getLang('remove') . '</form><br />';
+        $table[]='<form><input type="checkbox" name="prune" value="prune" id="snip_prune" checked><span title =" '. $this->getLang('refresh_title') . '"> ' . $this->getLang('refresh') .'</span></form><br />';
         $table[] ="<table>\n";
         $table[] ='<tr><th>Page date<th>' . $this->getLang('click_to_update') .'</tr>';
         $bounding_rows = count($table);
