@@ -257,7 +257,11 @@ jQuery( "#snip_updates_but" ).mouseover(function() {
  jQuery( "#snip_updates_but" ).mouseout(function() { 
       jQuery( "#snip_updates_but" ).css({'cursor': 'initial', "font-weight": "initial"});
  });
-     DokuCookie.setValue('snippets_update',1);
+ 
+    if(JSINFO['updatable']) { 
+       DokuCookie.setValue('snippets_update',1)   
+    }       
+    else DokuCookie.setValue('snippets_update','');        
 });
  
 

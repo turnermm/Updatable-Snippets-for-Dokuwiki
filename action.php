@@ -25,7 +25,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
        $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'handle_content_display');
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'handle_wiki_write',array('after'=>true,'before'=>false));
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handle_wiki_write', array('before'=>true, 'after'=>false));        
-     
+        $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handle_dw_started');     
     }
     
         /**
@@ -64,6 +64,12 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $event->data[] = $item;
     }
 
+    function handle_dw_started(&$event, $param) {
+        global $JSINFO;
+        if($this->getConf('snips_updatable')) {
+            $JSINFO['updatable'] = 1;
+        }
+    }
      /**
      * Replaces outdated snippets with updated versions
      * Is capable of replacing more than one snippet in a page 
