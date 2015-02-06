@@ -77,7 +77,8 @@ snippets = {
                 span = document.createElement('span');
                 span.innerHTML = link.innerHTML;
                 div.removeChild(link);
-
+                // Exclude template snippets from preview since they have no data at this point
+                if(!link.href.match(/templ_|templ:/)) { 
                 preview = document.createElement('a');
                 preview.className = 'plugin_snippets_preview';
                 preview.title = LANG['plugins']['snippets']['preview'];
@@ -88,7 +89,7 @@ snippets = {
                     return false;
                 });
                 div.appendChild(preview);
-
+                }
                 insert = document.createElement('a');
                 insert.className = 'plugin_snippets_insert';
                 insert.title = LANG['plugins']['snippets']['insert'];

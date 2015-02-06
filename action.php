@@ -26,6 +26,8 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'handle_wiki_write',array('after'=>true,'before'=>false));
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handle_wiki_write', array('before'=>true, 'after'=>false));        
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handle_dw_started');     
+        $controller->register_hook('COMMON_PAGETPL_LOAD', 'AFTER', $this, 'handle_template');         
+        
     }
     
         /**
@@ -69,6 +71,11 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         if($this->getConf('snips_updatable')) {
             $JSINFO['updatable'] = 1;
         }
+    }
+    
+    function handle_template(&$event, $param) {
+   
+       $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s','',$event->data['tpl']);
     }
      /**
      * Replaces outdated snippets with updated versions
@@ -186,16 +193,20 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         print p_locale_xhtml('denied');
                     }
                 } elseif($event->data == 'snippet_insert' || $event->data == 'snippet_update') {
-                
+                    $template = false;
+                    if(preg_match("/templ_|templ:/",$id)) $template = true;
                     if(auth_quickaclcheck($id) >= AUTH_READ) {
-                        if($event->data == 'snippet_update' ) {
+                        if($event->data == 'snippet_update'  && ! $template) {  // templates are permanent
                           $tm = time();
                            print "\n~~SNIPPET_O${tm}~~$id~~\n";
                         }
                         print "\n\n"; // always start on a new line (just to be safe)
-                        print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
+                        if($template) {
+                            print(pageTemplate($id));
+                        }
+                        else print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
                        
-                        if($event->data == 'snippet_update' ) {                       
+                        if($event->data == 'snippet_update' && ! $template) {                       
                              print "\n\n~~SNIPPET_C~~$id~~\n";
                              $curpage = cleanID($_REQUEST['curpage']);   // $curpage is page into which snippet is being inserted
                              $snip_data=unserialize(io_readFile($this->metafn,false));                                        
