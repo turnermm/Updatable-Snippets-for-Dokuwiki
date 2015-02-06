@@ -191,7 +191,6 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         if($event->data == 'snippet_update' ) {
                           $tm = time();
                            print "\n~~SNIPPET_O${tm}~~$id~~\n";
-                            print('data='.$event->data);
                         }
                         print "\n\n"; // always start on a new line (just to be safe)
                         print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
