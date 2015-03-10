@@ -241,7 +241,7 @@ function update_snippets(which) {
                }
     }
     });
-   var span_id = '#' + which.replace(':','_');  // de-activate links that have been called
+   var span_id = '#' + which.replace(/:/g,'_');  // de-activate links that have been called
    jQuery(span_id).css({'color':'gray', 'text-decoration':'none', 'cursor': 'initial','pointer-events': 'none'});
 }
 
