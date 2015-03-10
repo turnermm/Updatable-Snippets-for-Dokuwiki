@@ -30,10 +30,6 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         
     }
     
-        /**
-     *  Sets up database file for pages requiring updates
-     *  @author Myron Turner<turnermm02@shaw.ca>
-    */     
 
     /**
      *  Sets up database file for pages requiring updates

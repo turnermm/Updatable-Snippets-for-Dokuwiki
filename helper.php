@@ -38,13 +38,13 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
             ),
             array(
                 'name' => 'snippetWasUpdated',
-                'desc' => 'check if snippet inserted a page was updated to most recent version',
+                'desc' => 'check if snippet inserted in a page was updated to most recent version',
                 'params' => array( 'id'=>'string', 'snippet'=>'string'),
                 'return' =>array('timstamp'=>'boolean')
             ),
            array(
                 'name' => 'updateMetaTime',
-                'desc' => 'sets and updates tiestamp of snippet in metafile of page where snippet ia inserted',
+                'desc' => 'sets and updates timestamp of snippet in metafile of page where snippet is inserted',
                 'params' => array(
                     'id' => 'string',
                     'snippet' => 'string',
@@ -65,7 +65,7 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
     }
 
     /**
-     *  If the metadata shows that the file has been restored from an earlier version, that is the most recent
+     *  If the metadata shows that the (snippet) file has been restored from an earlier version, that is the most recent
      *  version; otherwise the last modified date is the most recent version
      *  @param string  $id  id of page to be checked for most recent version
      *  @modified int  timestamp

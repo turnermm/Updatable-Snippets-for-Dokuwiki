@@ -241,11 +241,12 @@ function update_snippets(which) {
                }
     }
     });
-   var span_id = '#' + which.replace(':','_');
+   var span_id = '#' + which.replace(':','_');  // de-activate links that have been called
    jQuery(span_id).css({'color':'gray', 'text-decoration':'none', 'cursor': 'initial','pointer-events': 'none'});
 }
 
 jQuery(document).ready(function() {
+ // hide and show update table in footer of snippets
 jQuery( "#snip_updates_but" ).click(function() { 
     if(this.innerHTML.match(/Hide/)) {
         this.innerHTML="Show Updates Table";
@@ -259,7 +260,7 @@ jQuery( "#snip_updates_but" ).mouseover(function() {
       jQuery( "#snip_updates_but" ).css({'cursor': 'initial', "font-weight": "initial"});
  });
  
-    if(JSINFO['updatable']) { 
+    if(JSINFO['updatable']) {  // initialize 'on' state of update checkbox in pop-up
        DokuCookie.setValue('snippets_update',1)   
     }       
     else DokuCookie.setValue('snippets_update','');        
