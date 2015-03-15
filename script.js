@@ -264,6 +264,7 @@ jQuery( "#snip_updates_but" ).mouseover(function() {
        DokuCookie.setValue('snippets_update',1)   
     }       
     else DokuCookie.setValue('snippets_update','');        
+    DokuCookie.setValue('qs',JSINFO['id']);
 });
  
 

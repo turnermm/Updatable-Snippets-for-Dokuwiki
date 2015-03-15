@@ -2,7 +2,7 @@
 base   snippets
 author Michael Klier/Myron Turner
 email  chi@chimeric.de
-date   2014-05-28
+date   2015-03-15
 name   Snippets Plugin
 desc   Provides toolbar button+popup for template insertion; can track and insert sinppet updates
 url    http://www.dokuwiki.org/plugin:snippets

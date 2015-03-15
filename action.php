@@ -70,8 +70,43 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
     }
     
     function handle_template(&$event, $param) {
+        $file = get_doku_pref('qs','');
+        $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s',"",$event->data['tpl']);
+        if(!$file) return;
+        $page_id = $file;
+        $file = noNS($file);
+        $page = cleanID($file);
+        if($this->getConf('prettytitles')) {
+            $title= str_replace('_',' ',$page);
+        }
+        else {
+           $title = $page;
+        }      
+        $event->data['tpl'] = str_replace(array(
+                              '#ID#',
+                              '#NS#',
+                              '#FILE#',
+                              '#!FILE#',
+                              '#!FILE!#',
+                              '#PAGE#',
+                              '#!PAGE#',
+                              '#!!PAGE#',
+                              '#!PAGE!#',
+
+                           ),
+                           array(
+                              $page_id,
+                              getNS($page_id),
+                              $file,
+                              utf8_ucfirst($file),
+                              utf8_strtoupper($file),
+                              $page,
+                              utf8_ucfirst($title),
+                              utf8_ucwords($title),
+                              utf8_strtoupper($title)
+                              ),
+                              $event->data['tpl']);
    
-       $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s','',$event->data['tpl']);
     }
      /**
      * Replaces outdated snippets with updated versions
