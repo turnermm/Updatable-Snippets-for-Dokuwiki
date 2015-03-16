@@ -1,7 +1,8 @@
 All documentation for the Snippets Plugin is available online at
 http://dokuwiki.org/plugin:snippets
 author: Michael Klier 2009 - 2010
-author: Myron Turner  2015
+author Dominik Eckelmann 2012 - 2014
+author: Myron Turner  2015 - present
 
 This version of the snippets plugin enables user to choose have files with embedded snippets automatically updated when the snippet file is changed.  
 
