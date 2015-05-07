@@ -67,6 +67,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         if($this->getConf('snips_updatable')) {
             $JSINFO['updatable'] = 1;
         }
+        else $JSINFO['updatable'] = 0;
     }
     
     function handle_template(&$event, $param) {
