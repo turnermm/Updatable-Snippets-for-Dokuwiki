@@ -260,11 +260,14 @@ jQuery( "#snip_updates_but" ).mouseover(function() {
       jQuery( "#snip_updates_but" ).css({'cursor': 'initial', "font-weight": "initial"});
  });
  
-    if(JSINFO['updatable']) {  // initialize 'on' state of update checkbox in pop-up
+if(opener) {
+    if(opener.JSINFO['updatable']) {  // initialize 'on' state of update checkbox in pop-up
        DokuCookie.setValue('snippets_update',1)   
     }       
     else DokuCookie.setValue('snippets_update','');        
-    DokuCookie.setValue('qs',JSINFO['id']);
+       
+     DokuCookie.setValue('qs',opener.JSINFO['id']);
+  }
 });
  
 
