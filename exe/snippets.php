@@ -20,7 +20,7 @@ if(isset($conf['plugin']['snippets']['snippets_page'])) {
 } else {
     $page = 'snippets'; // use default if not set
 }
-
+$JSINFO['snippets_listing_page'] = $page;
 if(!page_exists($page) or auth_quickaclcheck($page) < AUTH_READ) die();
 $snippets =& plugin_load('syntax', 'snippets');
 ?>
