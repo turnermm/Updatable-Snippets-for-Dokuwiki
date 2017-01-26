@@ -4,5 +4,6 @@
  */
 $conf['snippets_page'] = 'snippets';
 $conf['snips_updatable'] ='1';
+$conf['autoload_updated_snippets'] ='1';
 
 // vim:ts=4:sw=4:et:enc=utf-8:
