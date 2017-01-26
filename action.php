@@ -48,7 +48,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function handle_toolbar_define(&$event, $param) {
+    function handle_toolbar_define(Doku_Event $event, $param) {
         if(!page_exists($this->getConf('snippets_page'))) return;
 
         $item = array(
@@ -62,7 +62,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $event->data[] = $item;
     }
 
-    function handle_dw_started(&$event, $param) {
+    function handle_dw_started(Doku_Event $event, $param) {
         global $JSINFO;
         if($this->getConf('snips_updatable')) {
             $JSINFO['updatable'] = 1;
@@ -70,7 +70,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         else $JSINFO['updatable'] = 0;
     }
     
-    function handle_template(&$event, $param) {
+    function handle_template(Doku_Event $event, $param) {
         $file = get_doku_pref('qs','');
         $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s',"",$event->data['tpl']);
         if(!$file) return;
@@ -115,7 +115,12 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      *
      * @author Myron Turner <turnermm02@shaw.ca>
      */    
-     function handle_wiki_read(&$event,$param) {         
+     function handle_wiki_read(Doku_Event $event,$param) {  
+       if(!$this->getConf('autoload_updated_snippets')) return;
+       
+       //return for revisions
+       if($event->data[3]) return;
+
        if($event->data[1]) {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
         }
@@ -133,7 +138,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
       *
       * @author Myron Turner <turnermm02@shaw.ca>       
      */
-    function handle_wiki_write(&$event, $param) {
+    function handle_wiki_write(Doku_Event $event, $param) {
 
        if(! $event->result && $param['after']) return;  //write fail
        
@@ -172,7 +177,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
       * snippet is inserted.  The links implement an ajax call to exe/update.php where the snippets can be updated
       * and the timestamps of the updated snippets revised in the metafile of the pages where snippet is inserted
    */   
-    function handle_content_display(&$event, $param) {
+    function handle_content_display(Doku_Event $event, $param) {
         global $INFO;
         $snipid = $INFO['id'];  
         $table = array();
@@ -210,7 +215,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * @author Michael Klier <chi@chimeric.de>
      * @author Myron Turner <turnermm02@shaw.ca>
      */
-    function handle_ajax_call(&$event, $param) {
+    function handle_ajax_call(Doku_Event $event, $param) {
         global $lang;
         
         if($event->data == 'snippet_preview' or $event->data == 'snippet_insert'  or $event->data == 'snippet_update' ) {
