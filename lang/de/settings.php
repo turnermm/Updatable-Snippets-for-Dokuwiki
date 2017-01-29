@@ -7,3 +7,4 @@
  */
 $lang['snippets_page']         = 'Wikiseite, aus der die Vorlagenliste erstellt wird (muss eine ungeordnete Liste enthalten)';
 $lang['snips_updatable']       = 'Snippets standardmäßig aktualisierbar machen';
+$lang['old_revisions'] = 'Lade automatisch neue Snippetsversionen in  Ältere Versionen';

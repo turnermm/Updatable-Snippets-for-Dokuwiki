@@ -120,10 +120,11 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
     
     /** 
       * Inserts updated snippets in page after checking to see if snippets have been updated
-      * @param result   reference to string that holds the page contents
+      * @param result:   reference to string that holds the page contents
       * @param page_id  string  
+      * @ param $force boolean: if true, latest snippet will be inserted into Old Revisions
     */  
-    function insertSnippet(&$result, $page_id) {
+    function insertSnippet(&$result, $page_id,$force) {
 
          $snip_data=unserialize(io_readFile($this->metafn,false));          
          if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
@@ -137,7 +138,7 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
              $snip_file = wikiFN($snip);          
              $snip_t = filemtime($snip_file);     
 
-             if($snip_t < $page_t && $this->snippetWasUpdated($page_id,$snip)) {  
+             if($snip_t < $page_t && $this->snippetWasUpdated($page_id,$snip) && !$force) { 
                    continue;
              }
              
