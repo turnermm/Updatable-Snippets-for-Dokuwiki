@@ -2,7 +2,7 @@
 base   snippets
 author Myron Turner
 email  turnermm02@shaw.ca
-date   2016-02-19
+date   2017-02-19
 name   Snippets Plugin
 desc   Provides toolbar button+popup for template insertion; can track and insert sinppet updates
 url    http://www.dokuwiki.org/plugin:snippets
