@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Floriang <antispam@floriang.eu>
  */
 $lang['js']['preview']         = 'Aperçu';
