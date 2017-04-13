@@ -23,6 +23,10 @@ snippets = {
             updatebox.type = 'checkbox';
             updateid   = 'snippets__update';            
             
+            var templ_macros = document.createElement('input');
+            templ_macros.type = 'text';    
+            templ_macros.id = 'snippets__macros';
+            
             if(DokuCookie.getValue('snippets_keepopen')){
                 kobox.checked  = true;
                 kobox.defaultChecked = true; //IE wants this
@@ -64,6 +68,21 @@ snippets = {
             opts.append(updatebox); 
             opts.append(updl);
             opts.append(kobr2);
+        
+           var kobr3 = document.createElement('br');     
+           var macrl       = document.createElement('label');         
+           macrl.htmlFor   = 'snippets__macros';           
+           macrl.innerHTML ="<b>Macros & replacements: </b> ";
+           opts.append(macrl) ;   
+           opts.append(kobr3);
+           opts.append (templ_macros);  
+           
+                
+           
+           
+           //var macrol = document.createElement('label');
+          //snippets__macros';        
+           templ_macros.value ="@macro1@,val;@macro2@,val;@macro3@. . .";
         }
 
         // attach events
@@ -198,7 +217,7 @@ snippets = {
     // perform AJAX insert
     insert: function(page) {
         if(!opener) return;
-       
+alert(jQuery('#snippets__macros').val());
         var which = snippets.update ? 'snippet_update' : 'snippet_insert';  // selects whether to insert with or without update request
         jQuery.post(
             DOKU_BASE+'lib/exe/ajax.php',
