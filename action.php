@@ -73,6 +73,14 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
     function handle_template(Doku_Event $event, $param) {
         $file = get_doku_pref('qs','');
         $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s',"",$event->data['tpl']);
+             
+         $stringvars =   // from newpagtemplate
+             array_map(create_function('$v', 'return explode(",",$v,2);'),
+                 explode(';',$_REQUEST['macros']));              
+         foreach($stringvars as $value) {
+             $event->data['tpl'] = str_replace(trim($value[0]),hsc(trim($value[1])),$event->data['tpl']);
+	    }
+        
         if(!$file) return;
         $page_id = $file;
         $file = noNS($file);

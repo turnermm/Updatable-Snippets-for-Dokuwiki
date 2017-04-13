@@ -217,11 +217,11 @@ snippets = {
     // perform AJAX insert
     insert: function(page) {
         if(!opener) return;
-alert(jQuery('#snippets__macros').val());
+        var tval = jQuery('#snippets__macros').val();
         var which = snippets.update ? 'snippet_update' : 'snippet_insert';  // selects whether to insert with or without update request
         jQuery.post(
             DOKU_BASE+'lib/exe/ajax.php',
-            { call: which, id: page, curpage: opener.JSINFO['id'] },  // curpage is used for updates
+            { call: which, id: page, curpage: opener.JSINFO['id'],macros: tval },  // curpage is used for updates
             function(data){
                 opener.insertAtCarret('wiki__text', data, '');
                 if(!snippets.keepopen) {
