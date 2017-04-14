@@ -1,6 +1,7 @@
 /**
  * Javascript for DokuWiki Plugin snippets
  * @author Michael Klier <chi@chimeric.de>
+ * @author Myron Turner <turnermm02i@shaw.ca>
  */
 
 snippets = {
@@ -69,20 +70,17 @@ snippets = {
             opts.append(updl);
             opts.append(kobr2);
         
+        if(opener.JSINFO['userreplace']) {
            var kobr3 = document.createElement('br');     
            var macrl       = document.createElement('label');         
            macrl.htmlFor   = 'snippets__macros';           
-           macrl.innerHTML ="<b>Macros & replacements: </b> ";
+            macrl.innerHTML ="<b>" + LANG['plugins']['snippets']['user_macros'] + "</b> ";
            opts.append(macrl) ;   
            opts.append(kobr3);
            opts.append (templ_macros);  
+        }
            
-                
-           
-           
-           //var macrol = document.createElement('label');
-          //snippets__macros';        
-           templ_macros.value ="@macro1@,val;@macro2@,val;@macro3@. . .";
+           templ_macros.value ="@macro1@,val_1;@macro2@,val_2;. . .";
         }
 
         // attach events

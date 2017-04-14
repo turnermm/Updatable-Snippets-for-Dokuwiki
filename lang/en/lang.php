@@ -12,4 +12,5 @@ $lang['refresh'] = 'Refresh snippets database';
 $lang['hide_table'] = 'Hide Updates Table';
 $lang['click_to_update'] = 'Click to update';
 $lang['js']['keepopen'] = 'Keep window open on selection';
+$lang['js']['user_macros'] = 'User Macros & replacements';
 // vim:ts=4:sw=4:et:enc=utf-8:
