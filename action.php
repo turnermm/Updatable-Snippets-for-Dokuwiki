@@ -251,7 +251,12 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         }
                         print "\n\n"; // always start on a new line (just to be safe)
                         if($template) {
-                            print(pageTemplate($id));
+                             $tpl = pageTemplate($id);
+                              if($this->getConf('skip_unset_macros')) {
+                                  $tpl = preg_replace("/@.*?@/ms","",$tpl);
+                              }   
+                              print($tpl);
+                            
                         }
                         else print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
                        
