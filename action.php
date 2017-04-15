@@ -253,7 +253,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         if($template) {
                              $tpl = pageTemplate($id);
                               if($this->getConf('skip_unset_macros')) {
-                                  $tpl = preg_replace("/@.*?@/ms","",$tpl);
+                                  $tpl = preg_replace("/@\w+@/m","",$tpl);
                               }   
                               print($tpl);
                             
