@@ -8,4 +8,4 @@ $lang['old_revisions'] = 'Insert current version of snippet into old revisions';
 $lang['userreplace']="Replace user defined macros";
 $lang['prettytitles']="Replace underscores with spaces in replacements for page titles";
 $lang['skip_unset_macros'] ="Remove macros which have no substitution values.";
-$lang['default_macro_string'] ="";
+$lang['default_macro_string'] ="A user-defined default macro string for the <b>User Macros & replacements</b> textbox.";
