@@ -74,6 +74,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         }
       else $JSINFO['userreplace'] = 0;       
 
+      $JSINFO['default_macro_string'] = $this->getConf('default_macro_string') ? $this->getConf('default_macro_string') : "";
     }
     
     function handle_template(Doku_Event $event, $param) {

@@ -80,7 +80,7 @@ snippets = {
            opts.append (templ_macros);  
         }
            
-           templ_macros.value ="@macro1@,val_1;@macro2@,val_2;. . .";
+          templ_macros.value = opener.JSINFO['default_macro_string'] ? opener.JSINFO['default_macro_string'] : "@macro1@,val1;@macro2@,val2;. . .";           
         }
 
         // attach events

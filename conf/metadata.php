@@ -8,4 +8,4 @@ $meta['old_revisions'] = array('onoff');
 $meta['userreplace']= array('onoff');
 $meta['prettytitles'] = array('onoff');
 $meta['skip_unset_macros'] = array('onoff');
-
+$meta['default_macro_string']=array('string');
