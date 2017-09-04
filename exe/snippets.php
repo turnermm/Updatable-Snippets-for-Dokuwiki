@@ -14,6 +14,7 @@ require_once(DOKU_INC.'inc/common.php');
 require_once(DOKU_INC.'inc/search.php');
 require_once(DOKU_INC.'inc/template.php');
 require_once(DOKU_INC.'inc/auth.php');
+if(!defined('DOKU_TPL')) define('DOKU_TPL',tpl_basedir());
 
 if(isset($conf['plugin']['snippets']['snippets_page'])) {
     $page = $conf['plugin']['snippets']['snippets_page'];
