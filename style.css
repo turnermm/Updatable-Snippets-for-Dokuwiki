@@ -21,7 +21,9 @@ div.dokuwiki div#plugin_snippets__idx {
 div.dokuwiki div#plugin_snippets__opts {
   padding: 0.5em;
 }
-
+div.dokuwiki #snippets__macros {
+    width: 320px; /*macro textbox */
+}
 div.dokuwiki div#plugin_snippets__idx ul {
   list-style: none;
   padding: 0;

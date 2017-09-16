@@ -1,6 +1,7 @@
 /**
  * Javascript for DokuWiki Plugin snippets
  * @author Michael Klier <chi@chimeric.de>
+ * @author Myron Turner <turnermm02i@shaw.ca>
  */
 
 snippets = {
@@ -22,6 +23,10 @@ snippets = {
             var updatebox  = document.createElement('input');
             updatebox.type = 'checkbox';
             updateid   = 'snippets__update';            
+            
+            var templ_macros = document.createElement('input');
+            templ_macros.type = 'text';    
+            templ_macros.id = 'snippets__macros';
             
             if(DokuCookie.getValue('snippets_keepopen')){
                 kobox.checked  = true;
@@ -64,6 +69,18 @@ snippets = {
             opts.append(updatebox); 
             opts.append(updl);
             opts.append(kobr2);
+        
+        if(opener.JSINFO['userreplace']) {
+           var kobr3 = document.createElement('br');     
+           var macrl       = document.createElement('label');         
+           macrl.htmlFor   = 'snippets__macros';           
+            macrl.innerHTML ="<b>" + LANG['plugins']['snippets']['user_macros'] + "</b> ";
+           opts.append(macrl) ;   
+           opts.append(kobr3);
+           opts.append (templ_macros);  
+        }
+           
+          templ_macros.value = opener.JSINFO['default_macro_string'] ? opener.JSINFO['default_macro_string'] : "@macro1@,val1;@macro2@,val2;. . .";           
         }
 
         // attach events
@@ -198,11 +215,11 @@ snippets = {
     // perform AJAX insert
     insert: function(page) {
         if(!opener) return;
-       
+        var tval = jQuery('#snippets__macros').val();
         var which = snippets.update ? 'snippet_update' : 'snippet_insert';  // selects whether to insert with or without update request
         jQuery.post(
             DOKU_BASE+'lib/exe/ajax.php',
-            { call: which, id: page, curpage: opener.JSINFO['id'] },  // curpage is used for updates
+            { call: which, id: page, curpage: opener.JSINFO['id'],macros: tval },  // curpage is used for updates
             function(data){
                 opener.insertAtCarret('wiki__text', data, '');
                 if(!snippets.keepopen) {

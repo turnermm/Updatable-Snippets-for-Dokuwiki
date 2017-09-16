@@ -5,4 +5,7 @@
 $meta['snippets_page'] = array('string');
 $meta['snips_updatable'] = array('onoff');
 $meta['old_revisions'] = array('onoff');
-// vim:ts=4:sw=4:et:enc=utf-8:
+$meta['userreplace']= array('onoff');
+$meta['prettytitles'] = array('onoff');
+$meta['skip_unset_macros'] = array('onoff');
+$meta['default_macro_string']=array('string');

@@ -68,11 +68,26 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
             $JSINFO['updatable'] = 1;
         }
         else $JSINFO['updatable'] = 0;
+        
+        if($this->getConf('userreplace')) {
+            $JSINFO['userreplace'] = 1;
+        }
+      else $JSINFO['userreplace'] = 0;       
+
+      $JSINFO['default_macro_string'] = $this->getConf('default_macro_string') ? $this->getConf('default_macro_string') : "";
     }
     
     function handle_template(Doku_Event $event, $param) {
         $file = get_doku_pref('qs','');
         $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s',"",$event->data['tpl']);
+             
+         $stringvars =   // from newpagtemplate userreplace
+             array_map(create_function('$v', 'return explode(",",$v,2);'),
+                 explode(';',$_REQUEST['macros']));              
+         foreach($stringvars as $value) {
+             $event->data['tpl'] = str_replace(trim($value[0]),hsc(trim($value[1])),$event->data['tpl']);
+	    }
+        
         if(!$file) return;
         $page_id = $file;
         $file = noNS($file);
@@ -237,7 +252,12 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
                         }
                         print "\n\n"; // always start on a new line (just to be safe)
                         if($template) {
-                            print(pageTemplate($id));
+                             $tpl = pageTemplate($id);
+                              if($this->getConf('skip_unset_macros')) {
+                                  $tpl = preg_replace("/@\w+@/m","",$tpl);
+                              }   
+                              print($tpl);
+                            
                         }
                         else print trim(preg_replace('/<snippet>.*?<\/snippet>/s', '', io_readFile(wikiFN($id))));
                        
