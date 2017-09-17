@@ -285,10 +285,22 @@ if(opener) {
        
      DokuCookie.setValue('qs',opener.JSINFO['id']);
   }
+  
+     jQuery("a.revert").click( function (e) {   
+         var _class = jQuery("#yesnosnippet").attr("class");
+         if(_class && _class=="yesnosnippet") {
+             alert(LANG['plugins']['snippets']['restore_off']);
+             return false;    
+         }
+       return true;
+   });
+
 });
- 
 
+   
+   function snippets_InsertIntOldRev(which) {            
+      JSINFO['snippetsInsORev'] = which;   
+      DokuCookie.setValue('snippets_old_rev',which) ;  
+  
+   }
  
- 
-
-// vim:ts=4:sw=4:et:enc=utf-8:

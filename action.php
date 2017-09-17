@@ -14,7 +14,7 @@ require_once(DOKU_PLUGIN.'action.php');
  */
 class action_plugin_snippets extends DokuWiki_Action_Plugin {
     private $metafn;
-      
+    private $helper;      
     /**
      * Register callbacks
      */
@@ -27,11 +27,10 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handle_wiki_write', array('before'=>true, 'after'=>false));        
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handle_dw_started');     
         $controller->register_hook('COMMON_PAGETPL_LOAD', 'AFTER', $this, 'handle_template');         
-        
+        $controller->register_hook('HTML_SHOWREV_OUTPUT', 'BEFORE', $this, 'handle_revoutput', array('before'));  
     }
     
-
-    /**
+        /**
      *  Sets up database file for pages requiring updates
      *  @author Myron Turner<turnermm02@shaw.ca>
     */
@@ -41,7 +40,45 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
             $ar = array('snip'=>array(), 'doc'=>array());
             io_saveFile($this->metafn,serialize($ar));
         }
+        $this->helper = $this->loadHelper('snippets');
     }
+
+     function handle_revoutput(Doku_Event $event, $param){
+
+      global $INFO;   
+     $metafn = $this->helper->getMetaFileName();
+     $snip_data=unserialize(io_readFile($this->metafn,false));          
+     if(!array_key_exists($INFO['id'],$snip_data['doc'])) return;      
+       
+     $event->preventDefault();
+     $old_rev=$this->getConf('old_revisions')?'on':'off';
+     $onoff = get_doku_pref('snippets_old_rev', $old_rev);
+     $ON_CHKD="";
+     $OFF_CHKD = '';
+     $msg_2 = "";
+     $yesno = "";
+     if($onoff == 'on') {
+         $ON_CHKD='CHECKED';
+         $yesno =$this->getLang('no');
+         $msg_2 = $this->getLang('msg_2');  // 'Any outdated snippets have already been inserted. ';
+     }
+     else {
+         $OFF_CHKD='CHECKED';
+         $yesno =$this->getLang('yes');          
+     }   
+     $msg = p_locale_xhtml("showrev");
+     $n = preg_match('/strong>(.*?)<\/strong/',$msg, $matches);
+     $msg = str_replace('!', '.',$matches[1]) . ' ';       
+     echo $msg  .$this->getLang('oldrev_msg');
+
+   $msg_2  .= ' To view the original select "'. $yesno  .'" and either preview the Old Revision or go directly to the editor.';          
+     echo ' ' . $msg_2 . '<br /><span class="yesnosnippet" id="yesnosnippet"> Replace outdated snippets in Old Revisions? </span>' 
+       . '<input type="radio" name="snippetOldRevwhich" ' . $ON_CHKD . ' value="on"  onchange="snippets_InsertIntOldRev(this.value);" />Yes&nbsp;'
+       .'<input type="radio"  onchange="snippets_InsertIntOldRev(this.value);" '  . $OFF_CHKD . ' name="snippetOldRevwhich" value="off" />No<br/>';
+     echo  "<br /><hr />" ;
+         
+     }
+     
 
     /**
      * Adds the new toolbar item
@@ -131,17 +168,24 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * @author Myron Turner <turnermm02@shaw.ca>
      */    
      function handle_wiki_read(Doku_Event $event,$param) {  
-      $force_old = $this->getConf('old_revisions');
+     
+      $force_old = $this->getConf('old_revisions');  
+      $default = $force_old ? 'on' : 'off';  
+      $default = get_doku_pref('snippets_old_rev', $default);
+      if($default == 'on') {
+          $force_old = true;
+      }
+      else $force_old = false;
+      
        if($event->data[3] && !$force_old) return;   
-       
+      $force_old = true;
        if($event->data[1]) {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
         }
         else {
            $page_id = $event->data[2];
         }
-        $helper = $this->loadHelper('snippets');
-        $helper->insertSnippet($event->result, $page_id, $force_old);
+       $this->helper->insertSnippet($event->result, $page_id, $force_old);
      }
 
    
@@ -176,10 +220,11 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
           return;
         }
       
-        $helper = $this->loadHelper('snippets');    
+         
         if(preg_match('#data/pages/#', $event->data[0][0])) {  //make sure this is data/page not meta/attic save                  
             foreach($snippets as $snip) {                          
-                $helper->updateMetaTime($page_id,$snip) ;
+             $retv =  $this->helper->updateMetaTime($page_id,$snip) ;
+           //  msg($retv);
             }
         }
         
@@ -197,7 +242,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
            
         $snip_data=unserialize(io_readFile($this->metafn,false));
         if(!array_key_exists($snipid,$snip_data['snip'])) return;
-        $helper = $this->loadHelper('snippets');
+   
         $snip_time= filemtime(wikiFN($snipid));
    
         $table[] = "<div id='snippet_update_table'>\nSnippet date: " . date('r',$snip_time) .'<br />';
