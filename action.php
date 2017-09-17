@@ -27,11 +27,22 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handle_wiki_write', array('before'=>true, 'after'=>false));        
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handle_dw_started');     
         $controller->register_hook('COMMON_PAGETPL_LOAD', 'AFTER', $this, 'handle_template');         
-        $controller->register_hook('HTML_SHOWREV_OUTPUT', 'BEFORE', $this, 'handle_revoutput', array('before'));         
-//       $controller->register_hook('HTML_SHOWREV_OUTPUT', 'AFTER', $this, 'handle_revoutput', array('after'));         
-       
+        $controller->register_hook('HTML_SHOWREV_OUTPUT', 'BEFORE', $this, 'handle_revoutput', array('before'));  
     }
     
+        /**
+     *  Sets up database file for pages requiring updates
+     *  @author Myron Turner<turnermm02@shaw.ca>
+    */
+    function __construct() {
+        $this->metafn = metaFN('snippets_upd','.ser');
+        if(!file_exists($this->metafn)) {
+            $ar = array('snip'=>array(), 'doc'=>array());
+            io_saveFile($this->metafn,serialize($ar));
+        }
+        $this->helper = $this->loadHelper('snippets');
+    }
+
      function handle_revoutput(Doku_Event $event, $param){
 
       global $INFO;   
@@ -44,33 +55,30 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      $onoff = get_doku_pref('snippets_old_rev', $old_rev);
      $ON_CHKD="";
      $OFF_CHKD = '';
+     $msg_2 = "";
+     $yesno = "";
      if($onoff == 'on') {
          $ON_CHKD='CHECKED';
+         $yesno ='No';
+         $msg_2 = 'Any outdated snippets have already been inserted. ';
      }
-     else $OFF_CHKD='CHECKED';
+     else {
+         $OFF_CHKD='CHECKED';
+         $yesno ='Yes';          
+     }   
      $msg = p_locale_xhtml("showrev");
      $n = preg_match('/strong>(.*?)<\/strong/',$msg, $matches);
-     $msg = str_replace('!', '.',$matches[1]);       
-     echo $msg  .' It contains a snippet which may be outdated.';
-     echo '<br /><span> Replace outdated snippets in Old Revisions? </span>' 
-       . '<input type="radio" name="snippetOldRevwhich" ' . $ON_CHKD . ' value="on"  onchange="snippets_InsertIntOldRev(this.value);" />Yes&nbsp'
+     $msg = str_replace('!', '.',$matches[1]) . ' ';       
+     echo $msg  .$this->getLang('oldrev_msg');
+
+   $msg_2  .= ' To view the original select "'. $yesno  .'" and either preview the Old Revision or go directly to the editor.';          
+     echo ' ' . $msg_2 . '<br /><span class="yesnosnippet" id="yesnosnippet"> Replace outdated snippets in Old Revisions? </span>' 
+       . '<input type="radio" name="snippetOldRevwhich" ' . $ON_CHKD . ' value="on"  onchange="snippets_InsertIntOldRev(this.value);" />Yes&nbsp;'
        .'<input type="radio"  onchange="snippets_InsertIntOldRev(this.value);" '  . $OFF_CHKD . ' name="snippetOldRevwhich" value="off" />No<br/>';
-     echo "<br /><br /><hr />" ;
+     echo  "<br /><hr />" ;
          
      }
      
-    /**
-     *  Sets up database file for pages requiring updates
-     *  @author Myron Turner<turnermm02@shaw.ca>
-    */
-    function __construct() {
-        $this->metafn = metaFN('snippets_upd','.ser');
-        if(!file_exists($this->metafn)) {
-            $ar = array('snip'=>array(), 'doc'=>array());
-            io_saveFile($this->metafn,serialize($ar));
-        }
-        $this->helper = $this->loadHelper('snippets');
-    }
 
     /**
      * Adds the new toolbar item
@@ -216,7 +224,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         if(preg_match('#data/pages/#', $event->data[0][0])) {  //make sure this is data/page not meta/attic save                  
             foreach($snippets as $snip) {                          
              $retv =  $this->helper->updateMetaTime($page_id,$snip) ;
-             msg($retv);
+           //  msg($retv);
             }
         }
         
