@@ -59,12 +59,12 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      $yesno = "";
      if($onoff == 'on') {
          $ON_CHKD='CHECKED';
-         $yesno ='No';
-         $msg_2 = 'Any outdated snippets have already been inserted. ';
+         $yesno =$this->getLang('no');
+         $msg_2 = $this->getLang('msg_2');  // 'Any outdated snippets have already been inserted. ';
      }
      else {
          $OFF_CHKD='CHECKED';
-         $yesno ='Yes';          
+         $yesno =$this->getLang('yes');          
      }   
      $msg = p_locale_xhtml("showrev");
      $n = preg_match('/strong>(.*?)<\/strong/',$msg, $matches);

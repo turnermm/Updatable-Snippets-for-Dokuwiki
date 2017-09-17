@@ -288,7 +288,10 @@ if(opener) {
   
      jQuery("a.revert").click( function (e) {   
          var _class = jQuery("#yesnosnippet").attr("class");
-         if(_class && _class=="yesnosnippet") return false;    
+         if(_class && _class=="yesnosnippet") {
+             alert(LANG['plugins']['snippets']['restore_off']);
+             return false;    
+         }
        return true;
    });
 
@@ -298,6 +301,6 @@ if(opener) {
    function snippets_InsertIntOldRev(which) {            
       JSINFO['snippetsInsORev'] = which;   
       DokuCookie.setValue('snippets_old_rev',which) ;  
-     //  document.cookie = 'snippetsInsORev=' + which +';expires="";path=' +JSINFO['doku_base'];   
+  
    }
  

@@ -14,3 +14,7 @@ $lang['click_to_update'] = 'Click to update';
 $lang['js']['keepopen'] = 'Keep window open on selection';
 $lang['js']['user_macros'] = 'User Macros & replacements';
 $lang['oldrev_msg'] = 'It contains one or more snippets which may be outdated.';
+$lang['yes'] ='Yes';
+$lang['no'] ='No';
+$lang['msg_2'] = 'Any outdated snippets have already been inserted. ';
+$lang['js']['restore_off']= 'Restore is not available when updating snippets to Old Revisions';
