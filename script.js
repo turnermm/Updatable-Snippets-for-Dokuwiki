@@ -285,24 +285,19 @@ if(opener) {
        
      DokuCookie.setValue('qs',opener.JSINFO['id']);
   }
+  
+     jQuery("a.revert").click( function (e) {   
+         var _class = jQuery("#yesnosnippet").attr("class");
+         if(_class && _class=="yesnosnippet") return false;    
+       return true;
+   });
+
 });
- 
 
-
-   function snippets_InsertIntOldRev(which) {          
-   /*
-      var state = JSINFO['snippetsInsORev'] ? JSINFO['snippetsInsORev']  : "";      
-      if(which) {
-      }
-      else if(state == 'on')  {
-            which = 'off'  
-      }
-      else which = 'on';      
-      */
+   
+   function snippets_InsertIntOldRev(which) {            
       JSINFO['snippetsInsORev'] = which;   
       DokuCookie.setValue('snippets_old_rev',which) ;  
      //  document.cookie = 'snippetsInsORev=' + which +';expires="";path=' +JSINFO['doku_base'];   
    }
  
-
-// vim:ts=4:sw=4:et:enc=utf-8:
