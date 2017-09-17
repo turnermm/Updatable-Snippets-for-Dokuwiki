@@ -35,19 +35,27 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      function handle_revoutput(Doku_Event $event, $param){
 
       global $INFO;   
-       $metafn = $this->helper->getMetaFileName();
-       $snip_data=unserialize(io_readFile($this->metafn,false));          
-       if(!array_key_exists($INFO['id'],$snip_data['doc'])) return;      
+     $metafn = $this->helper->getMetaFileName();
+     $snip_data=unserialize(io_readFile($this->metafn,false));          
+     if(!array_key_exists($INFO['id'],$snip_data['doc'])) return;      
        
-        $event->preventDefault();
-
-       $msg = p_locale_xhtml("showrev");
-       $n = preg_match('/strong>(.*?)<\/strong/',$msg, $matches);
-      $msg = str_replace('!', '.',$matches[1]);       
-      echo $msg  .' It contains a snippet which may be outdated.';
-      echo '<br /><span> Replace outdated snippets in Old Revisions? </span>' 
-       . '<input type="radio" name="snippetOldRevwhich"  value="on"  onchange="snippets_InsertIntOldRev(this.value);" />Yes&nbsp<input type="radio"  onchange="snippets_InsertIntOldRev(this.value)" name="snippetOldRevwhich" value="off" />No<br/>';
-      echo "<br /><br /><hr />" ;
+     $event->preventDefault();
+     $old_rev=$this->getConf('old_revisions')?'on':'off';
+     $onoff = get_doku_pref('snippets_old_rev', $old_rev);
+     $ON_CHKD="";
+     $OFF_CHKD = '';
+     if($onoff == 'on') {
+         $ON_CHKD='CHECKED';
+     }
+     else $OFF_CHKD='CHECKED';
+     $msg = p_locale_xhtml("showrev");
+     $n = preg_match('/strong>(.*?)<\/strong/',$msg, $matches);
+     $msg = str_replace('!', '.',$matches[1]);       
+     echo $msg  .' It contains a snippet which may be outdated.';
+     echo '<br /><span> Replace outdated snippets in Old Revisions? </span>' 
+       . '<input type="radio" name="snippetOldRevwhich" ' . $ON_CHKD . ' value="on"  onchange="snippets_InsertIntOldRev(this.value);" />Yes&nbsp'
+       .'<input type="radio"  onchange="snippets_InsertIntOldRev(this.value);" '  . $OFF_CHKD . ' name="snippetOldRevwhich" value="off" />No<br/>';
+     echo "<br /><br /><hr />" ;
          
      }
      
@@ -152,9 +160,17 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * @author Myron Turner <turnermm02@shaw.ca>
      */    
      function handle_wiki_read(Doku_Event $event,$param) {  
-      $force_old = $this->getConf('old_revisions');
+     
+      $force_old = $this->getConf('old_revisions');  
+      $default = $force_old ? 'on' : 'off';  
+      $default = get_doku_pref('snippets_old_rev', $default);
+      if($default == 'on') {
+          $force_old = true;
+      }
+      else $force_old = false;
+      
        if($event->data[3] && !$force_old) return;   
-       
+      $force_old = true;
        if($event->data[1]) {
          $page_id = ltrim($event->data[1] . ':' . $event->data[2], ":");       
         }

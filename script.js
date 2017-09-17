@@ -300,7 +300,7 @@ if(opener) {
       else which = 'on';      
       */
       JSINFO['snippetsInsORev'] = which;   
-      DokuCookie.setValue('snippets_old_rev',which)   
+      DokuCookie.setValue('snippets_old_rev',which) ;  
      //  document.cookie = 'snippetsInsORev=' + which +';expires="";path=' +JSINFO['doku_base'];   
    }
  
