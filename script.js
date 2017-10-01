@@ -297,6 +297,9 @@ if(opener) {
 
 });
 
+  function snippet_missing(id) {
+      alert('id=' + id);
+  }
    
    function snippets_InsertIntOldRev(which) {            
       JSINFO['snippetsInsORev'] = which;   
