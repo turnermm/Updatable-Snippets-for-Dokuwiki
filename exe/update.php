@@ -28,7 +28,7 @@ else {  // used for testing
 $helper = plugin_load('helper', 'snippets');
 $page = wikiFN($id);
 $result = io_readFile($page);
-$helper->insertSnippet($result, $id);   // insert all updated snippets
+$helper->insertSnippet($result, $id,false);   // insert all updated snippets
 
 // update timestamps in metafiles
 global $snip_data;
