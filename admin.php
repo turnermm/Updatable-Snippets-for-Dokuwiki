@@ -27,7 +27,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
     function handle() {
     
       if (!isset($_REQUEST['cmd'])) return;   // first time - nothing to do
-//echo $this->metaFn .'<br>';
+
       $this->output = 'invalid';
    
       if (!checkSecurityToken()) return;
@@ -102,10 +102,9 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
         $data = $data_all[$which];   
         if (!is_array($data)) $data = array();
         foreach($data as $id=>$snips) {  
-          // $snips_found = $this->helper -> snippets_prune_meta($id);
+          $found = $this->update_all($id, $snips) ;
             $ret .= '<p><b>id: ' . $id .'</b><br />';         
             $snips =implode('<br />',$snips);    
-            $found = $this->update_all($id, $snips) ;
             $ret .= "<b><u>snippets logged:</u></b><br />$snips<br /><b>Found</b><br />$found</p>";
             
             }  
@@ -115,12 +114,14 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
     }
 
     function update_all($id, $snips) {    
-        
        $file=wikiFN($id);
        $text = file_get_contents($file);
        preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);    
-        $snips =implode('<br />',$matches[1]);    
-        return $snips;
+        $res =implode('<br />',$matches[1]);  
+         $diff = array_diff($snips,$matches[1]) ;         
+         $diff = implode('<br />',$diff);  
+        $res .= "<br><b>Diff</b></br>" . $diff;
+        return $res;
     }
     
     function js() {
