@@ -15,10 +15,14 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
 
     var $output = '';
     private $metaFn;
+    private $metaFnBak;
     private $helper;
     function __construct() {       
        $metafile= 'snippets_upd';
        $this->metaFn = metaFN($metafile,'.ser');
+       $meta_bak = 'snippets_update_bak';
+       $this->metaFnBak  = metaFN($meta_bak,'.ser');
+       //msg($this->metaFnBak);
        $this->helper = $this->loadHelper('snippets',1);
     }
     /**
@@ -99,26 +103,36 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
    
    $ret = '';
         $data_all = unserialize(io_readFile($this->metaFn,false));
-        $data = $data_all[$which];   
+        $data = $data_all['doc'];   
+        $snip =  $data_all['snip'];          
+        $snip_data = array();
         if (!is_array($data)) $data = array();
-        foreach($data as $id=>$snips) {  
-          $found = $this->update_all($id, $snips) ;
-            $ret .= '<p><b>id: ' . $id .'</b><br />';         
+        foreach($data as $id=>$snips) {            
+           $ar = array();
+           $found = $this->update_all($id, $snips, $ar) ;
+           $ret .= '<p><b>id: ' .  $id .'</b><br />';         
             $snips =implode('<br />',$snips);    
-            $ret .= "<b><u>snippets logged:</u></b><br />$snips<br /><b>Found</b><br />$found</p>";
-            
+            $ar_p = print_r($ar,1);
+            $ret .= "<b><u>snippets logged for $id:</u></b><br />$snips<br /><b>Found</b><br />$found<br />$ar_p</p>";
+             $data[$id]   = $ar;     
+             for($i=0; $i<count($ar); $i++) {
+                 $snip_data[$ar[$i]][] = $id;
+             }
             }  
-            
+        $final = array();    
+        $final['doc'] = $data;
+        $final['snip'] = $snip_data; 
+        io_saveFile($this->metaFnBak,serialize($final));
          return $ret;
-//        io_saveFile($this->metaFn,serialize($data));
     }
 
-    function update_all($id, $snips) {    
+    function update_all($id, $snips, &$ar) {            
        $file=wikiFN($id);
        $text = file_get_contents($file);
-       preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);    
+        preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);    
+        $ar = $matches[1];
         $res =implode('<br />',$matches[1]);  
-         $diff = array_diff($snips,$matches[1]) ;         
+         $diff = array_diff($snips,$matches[1]) ;            
          $diff = implode('<br />',$diff);  
         $res .= "<br><b>Diff</b></br>" . $diff;
         return $res;
