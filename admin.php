@@ -113,7 +113,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
            $ret .= '<p><b>id: ' .  $id .'</b><br />';         
             $snips =implode('<br />',$snips);    
             $ar_p = print_r($ar,1);
-            $ret .= "<b><u>snippets logged for $id:</u></b><br />$snips<br /><b>Found</b><br />$found<br />$ar_p</p>";
+         $ret .= "<b><u>snippets logged for $id:</u></b><br />$snips<br /><b>Snippets currently in file:</b><br />$found<br />"; //$ar_p</p>";
              $data[$id]   = $ar;     
              for($i=0; $i<count($ar); $i++) {
                  $snip_data[$ar[$i]][] = $id;
@@ -131,10 +131,20 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
        $text = file_get_contents($file);
         preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);    
         $ar = $matches[1];
-        $res =implode('<br />',$matches[1]);  
+        preg_match_all("/~~SNIPPET_O(.*?)~~(.*?)~~/",$text,$matches_tm);
+        $res = "Dates:<br />";
+   
+   for($i=0; $i<count($matches_tm[1]);$i++) {
+           $tm = $matches_tm[1][$i];     
+           $sfile =   $matches_tm[2][$i];  
+            $res .= date('r', $tm) .  " -- $sfile <br />";
+   } 
+        $res .=implode('<br />',$matches[1]);  
          $diff = array_diff($snips,$matches[1]) ;            
+         if(empty($diff)) return $res;
          $diff = implode('<br />',$diff);  
-        $res .= "<br><b>Diff</b></br>" . $diff;
+         
+        $res .= "<br><b>Removing from the database:</b></br>" . $diff;
         return $res;
     }
     
