@@ -154,7 +154,11 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          //get snippets in $refs_keys which are not in matches[1], i.e snips in metafile which are not in page file
          $refs_diff_1 = array_diff($refs_keys,$matches[1]);
          $refs_diff_2 = array_diff($matches[1],$refs_keys);
-         $res .= '<b>Snippets in metafile not in page file:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_1) . "<br />"; // &nbsp;&nbsp;2: " .  implode(',', $refs_diff_2) ."<br />";
+         $res .= '<b>Snippets in metafile not in page file:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_1) . "<br />"; 
+         if(!empty($refs_diff_2)) {
+             $res .= '<b>Snippets in page file not in meta file:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_2) . "<br />"; 
+         }
+         // &nbsp;&nbsp;2: " .  implode(',', $refs_diff_2) ."<br />";
          if(empty($diff)) return $res . 'No diff: nothing to do';
          $diff = implode('<br />',$diff);  
          
