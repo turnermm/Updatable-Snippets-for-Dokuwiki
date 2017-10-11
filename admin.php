@@ -108,9 +108,9 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
         $snip_data = array();
         if (!is_array($data)) $data = array();
         foreach($data as $id=>$snips) {            
-           $ar = array();
+         $ar = array();  // will hold snips currently in page file
            $found = $this->update_all($id, $snips, $ar) ;
-           $ret .= '<p><b>id: ' .  $id .'</b><br />';         
+         $ret .= '<br /><h2>id: ' .  $id .'</h2>';         
             $snips =implode('<br />',$snips);    
             $ar_p = print_r($ar,1);
          $ret .= "<b><u>snippets logged for $id:</u></b><br />$snips<br /><b>Snippets currently in file:</b><br />$found<br />"; //$ar_p</p>";
@@ -132,16 +132,29 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
         preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);    
         $ar = $matches[1];
         preg_match_all("/~~SNIPPET_O(.*?)~~(.*?)~~/",$text,$matches_tm);
-        $res = "Dates:<br />";
+        $res = "Data from page:<br />";
    
    for($i=0; $i<count($matches_tm[1]);$i++) {
            $tm = $matches_tm[1][$i];     
            $sfile =   $matches_tm[2][$i];  
-            $res .= date('r', $tm) .  " -- $sfile <br />";
+                $res .=  "Snippet : <b>$sfile</b>   timestamp:  " . $tm . ", date: " .date('r', $tm) .  "<br />";
    } 
-        $res .=implode('<br />',$matches[1]);  
+       
+ ///      $res .= implode('<br />',$matches[1]);    // snippet ids
          $diff = array_diff($snips,$matches[1]) ;            
-         if(empty($diff)) return $res;
+    //    $diff_2 = array_diff($matches[1],$snips) ; 
+        /* from metafile */
+          $isref = p_get_metadata($id, 'relation isreferencedby');
+         $res .=   '<br /><b>Found in metafile:</b><br />';  // . print_r($isref,1)  . '<br />';
+         $refs = $isref['snippets'];
+         foreach ($refs as $fnam=>$tm) {
+             $res .= "$fnam: " .date('r', $tm) . '<br />';
+         }
+         $refs_keys = array_keys($refs);
+         $refs_diff_1 = array_diff($refs_keys,$matches[1]);
+         $refs_diff_2 = array_diff($matches[1],$refs_keys);
+         $res .= '&nbsp;&nbsp;1: ' .  implode(',', $refs_diff_1) . "<br /> &nbsp;&nbsp;2: " .  implode(',', $refs_diff_1) ."<br />";
+         if(empty($diff)) return $res . 'No diff: nothing to do';
          $diff = implode('<br />',$diff);  
          
         $res .= "<br><b>Removing from the database:</b></br>" . $diff;
