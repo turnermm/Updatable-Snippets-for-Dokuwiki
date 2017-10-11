@@ -140,20 +140,21 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
                 $res .=  "Snippet : <b>$sfile</b>   timestamp:  " . $tm . ", date: " .date('r', $tm) .  "<br />";
    } 
        
- ///      $res .= implode('<br />',$matches[1]);    // snippet ids
+ 
          $diff = array_diff($snips,$matches[1]) ;            
-    //    $diff_2 = array_diff($matches[1],$snips) ; 
+ 
         /* from metafile */
           $isref = p_get_metadata($id, 'relation isreferencedby');
-         $res .=   '<br /><b>Found in metafile:</b><br />';  // . print_r($isref,1)  . '<br />';
+         $res .=   '<br /><b>Found in metafile:</b><br />';  
          $refs = $isref['snippets'];
          foreach ($refs as $fnam=>$tm) {
              $res .= "$fnam: " .date('r', $tm) . '<br />';
          }
          $refs_keys = array_keys($refs);
+         //get snippets in $refs_keys which are not in matches[1], i.e snips in metafile which are not in page file
          $refs_diff_1 = array_diff($refs_keys,$matches[1]);
          $refs_diff_2 = array_diff($matches[1],$refs_keys);
-         $res .= '&nbsp;&nbsp;1: ' .  implode(',', $refs_diff_1) . "<br /> &nbsp;&nbsp;2: " .  implode(',', $refs_diff_1) ."<br />";
+         $res .= '<b>Snippets in metafile not in page file:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_1) . "<br />"; // &nbsp;&nbsp;2: " .  implode(',', $refs_diff_2) ."<br />";
          if(empty($diff)) return $res . 'No diff: nothing to do';
          $diff = implode('<br />',$diff);  
          
