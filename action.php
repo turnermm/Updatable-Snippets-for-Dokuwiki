@@ -71,8 +71,7 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      $msg = str_replace('!', '.',$matches[1]) . ' ';       
      echo $msg  .$this->getLang('oldrev_msg');
 
-   $msg_2  .= ' To view the original select "'. $yesno  .'" and either preview the Old Revision or go directly to the editor.';          
-     echo ' ' . $msg_2 . '<br /><span class="yesnosnippet" id="yesnosnippet"> Replace outdated snippets in Old Revisions? </span>' 
+     echo ' ' . $msg_2 . '<br /><span class="yesnosnippet" id="yesnosnippet">' . $this->getLang('replace') . '</span>' 
        . '<input type="radio" name="snippetOldRevwhich" ' . $ON_CHKD . ' value="on"  onchange="snippets_InsertIntOldRev(this.value);" />Yes&nbsp;'
        .'<input type="radio"  onchange="snippets_InsertIntOldRev(this.value);" '  . $OFF_CHKD . ' name="snippetOldRevwhich" value="off" />No<br/>';
      echo  "<br /><hr />" ;

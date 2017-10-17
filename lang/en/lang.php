@@ -18,3 +18,4 @@ $lang['yes'] ='Yes';
 $lang['no'] ='No';
 $lang['msg_2'] = 'Any outdated snippets have already been inserted. ';
 $lang['js']['restore_off']= 'Restore is not available when updating snippets to Old Revisions';
+$lang['replace']='Replace outdated snippets in this Old Revision?';
