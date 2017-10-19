@@ -130,8 +130,8 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
         $text = file_get_contents($file);
         preg_match_all("/~~SNIPPET_C~~(.*?)~~/",$text,$matches);    
         $ar = $matches[1];
-        preg_match_all("/~~SNIPPET_O(.*?)~~(.*?)~~/",$text,$matches_tm);
-        
+        preg_match_all("/~~SNIPPET_O(.*?)~~(.*?)~~/",$text,$matches_tm);      
+     
   
        for($i=0; $i<count($matches_tm[1]);$i++) {
                $tm = $matches_tm[1][$i];     
@@ -158,7 +158,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          }
          else $res .= "No snippets found in page which are not logged in metafile<br />";
   
-            $res .= $this->update_metafile($refs_diff_2,$refs_diff_1,$id,  $matches_tm[1][0] );
+        $res .= $this->update_metafile($refs_diff_2,$refs_diff_1,$id,  $matches_tm[1][0] );
 
          $diff = array_diff($snips,$matches[1]) ; 
          if(empty($diff)) {         
