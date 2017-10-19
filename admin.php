@@ -104,7 +104,6 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
    $ret = '<b>Database: </b>' . $this->metaFn;
     $data_all = unserialize(io_readFile($this->metaFn,false));    
     $data = $data_all['doc'];   
-    //$snip =  $data_all['snip'];          
     $snip_data = array();
     if (!is_array($data)) $data = array();
     foreach($data as $id=>$snips) {            
@@ -112,7 +111,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          $found = $this->update_all($id, $snips, $ar) ;
          $ret .= '<br /><h2>id: ' .  $id .'</h2>';         
          $snips =implode('<br />',$snips);    
-       // $ar_p = print_r($ar,1);
+       
          $ret .= "<b><u>snippets logged for $id:</u></b><br />$snips<br /><b>Snippets currently in page:</b><br />$found<br />"; //$ar_p</p>";
          $data[$id]   = $ar;     
          for($i=0; $i<count($ar); $i++) {
@@ -122,7 +121,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
      $final = array();    
      $final['doc'] = $data;
      $final['snip'] = $snip_data; 
-     io_saveFile($this->metaFnBak,serialize($final));
+     io_saveFile($this->metaFn,serialize($final));
      return $ret;
     }
 
@@ -133,7 +132,6 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
         $ar = $matches[1];
         preg_match_all("/~~SNIPPET_O(.*?)~~(.*?)~~/",$text,$matches_tm);
         
-        $res = "Data from page:<br />" .  $matches_tm[1][0] ."<br />";
   
        for($i=0; $i<count($matches_tm[1]);$i++) {
                $tm = $matches_tm[1][$i];     
@@ -159,9 +157,9 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
              $res .= '<b>Snippets in page not in meta file:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_2) . "<br />"; 
          }
          else $res .= "No snippets found in page which are not logged in metafile<br />";
-         if(!empty($refs_diff_2) && !empty($refs_diff_1)) {
+  
             $res .= $this->update_metafile($refs_diff_2,$refs_diff_1,$id,  $matches_tm[1][0] );
-         }
+
          $diff = array_diff($snips,$matches[1]) ; 
          if(empty($diff)) {         
             $diff = " no discrepancies found";
@@ -173,32 +171,55 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
     }
    
   function update_metafile($add_array,$remove_array, $id,$tm)   {
+      $to_add = false;
+      $to_remove = false;
+      if(empty($add_array) && empty($remove_array)) return "Empty: Nothing to be done for $id<br />";
       $isref = p_get_metadata($id, 'relation isreferencedby');
+      if(!empty($add_array)) {
+          $to_add = true;
       $ret = 'Add to metafile: ' . implode(',  ', $add_array) . "<br />" ;
+      }
+      else $ret .="No additions to metafile<br />";
+      
+       if(!empty($remove_array)) {
+         $to_remove=true;  
       $ret .= 'Remove from metafile: ' . implode(',  ', $remove_array) . "<br />" ;
-      $ret .= 'Found in metafile: ' .   print_r($isref['snippets'],1) . "<br />"; // implode(',  ', $isref) . "<br />" ;
+       }
+       else $ret .="No snippets to remove from metafile<br />";
+                  
+      $ret .= 'Found in metafile: <br />'; 
       $snippet_array = $isref['snippets'];
       foreach($snippet_array as $snippet=>$date) {
-          $ret .= "$snippet => $date<br />";
-      }
-      $ret .= "Updating isref Array<br/>Removing:<br/>";
-      $updated = array();
-     foreach($snippet_array as $snippet=>$date) {
-         if(in_array($snippet,$remove_array)) continue;          
-         $updated [$snippet]=$date;
+          $ret .= "&nbsp;&nbsp;&nbsp;&nbsp; $snippet => $date<br />";
       }
       
+      $ret .= "Updating isref array<br/>";
+      if($to_remove) {
+          $ret .= "Removing:<br/>";
+     foreach($snippet_array as $snippet=>$date) {
+             if(in_array($snippet,$remove_array)) {
+                    $ret .=  "&nbsp;&nbsp;&nbsp;&nbsp;$snippet<br />";     
+                   continue;    
+             }  
+             $updated['snippets'][$snippet]=$date;
+          }
+            $ret .= "<br/>";
+      }
+      
+      if($to_add) {
       $ret  .="Adding: " . print_r($add_array,1) . "<br />"; 
       foreach($add_array as $add){
-          $updated [$add] =$tm;
-   //      $ret . = "$add <br />";
+              $updated ['snippets'] [$add] =$tm;
+          }           
+      }
+      if(empty($updated)) return $ret;
+      foreach($snippet_array as $snip=>$tm) {
+          $updated ['snippets'][$snip] = $tm;
       }
       $ret .= 'Updated: ' . print_r($updated,1) . "<br />" ;
       
-      
-     
-      
-      
+     $data['relation']['isreferencedby']=$updated;
+      p_set_metadata($id, $data);      
       return $ret;
       
   }
