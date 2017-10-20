@@ -13,12 +13,14 @@
  */
 class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
 
-    var $output = '';
+    private $output = '';
     private $metaFn;    
+    private $debug;
  
     function __construct() {       
        $metafile= 'snippets_upd';
        $this->metaFn = metaFN($metafile,'.ser');   
+       $this->debug = false;
     }
     /**
      * handle user request
@@ -76,7 +78,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
  
 
     function prune_datafile() {   
-   $ret = '<b>Database: </b>' . $this->metaFn;
+   $ret = '<b>'. $this->getLang("dbase") .  '</b>' . $this->metaFn;
     $data_all = unserialize(io_readFile($this->metaFn,false));    
     $data = $data_all['doc'];   
     $snip_data = array();
@@ -87,7 +89,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          $ret .= '<br /><h2>id: ' .  $id .'</h2>';         
          $snips =implode('<br />',$snips);    
        
-         $ret .= "<b><u>snippets logged for $id:</u></b><br />$snips<br /><b>Snippets currently in page:</b><br />$found<br />"; //$ar_p</p>";
+         $ret .= "<b><u>" . $this->getLang("logged_for") ." $id:</u></b><br />$snips<br /><b>" . $this->getLang("in_page") ."</b><br />$found<br />";
          $data[$id]   = $ar;     
          for($i=0; $i<count($ar); $i++) {
              $snip_data[$ar[$i]][] = $id;
@@ -111,13 +113,13 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
        for($i=0; $i<count($matches_tm[1]);$i++) {
                $tm = $matches_tm[1][$i];     
                $sfile =   $matches_tm[2][$i];  
-                $res .=  "Snippet : <b>$sfile</b>   timestamp:  " . $tm . ", date: " .date('r', $tm) .  "<br />";
+                $res .=  "&nbsp;&nbsp;&nbsp;&nbsp;<b>$sfile</b>   timestamp:  " . $tm . ", date: " .date('r', $tm) .  "<br />";
                 $page_entries[$sfile] = $tm;
        } 
         
         /* from metafile */
           $isref = p_get_metadata($id, 'relation isreferencedby');
-         $res .=   '<br /><b>Found in metafile:</b><br />';  
+         $res .=   '<br /><b>' .$this->getLang("in_meta") . '</b><br />';  
          $refs = $isref['snippets'];
          foreach ($refs as $fnam=>$tm) {
              $res .= "$fnam: " .date('r', $tm) . '<br />';
@@ -127,12 +129,12 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          $refs_diff_1 = array_diff($refs_keys,$matches[1]);   
          $refs_diff_2 = array_diff($matches[1],$refs_keys);
          if(!empty( $refs_diff_1 ))
-            $res .= '<b>Snippets in metafile not in page:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_1) . "<br />"; 
-        else $res .= "No snippets found in metafile not in page<br />";
+            $res .= $this->dbg('<b>Snippets in metafile not in page:</b><br />&nbsp;&nbsp; ', $refs_diff_1) ; 
+         else $res .= $this->dbg("No snippets found in metafile not in page");
          if(!empty($refs_diff_2)) {
-             $res .= '<b>Snippets in page not in meta file:</b><br />&nbsp;&nbsp; ' .  implode(',  ', $refs_diff_2) . "<br />"; 
+             $res .= $this->dbg('<b>Snippets in page not in meta file:</b><br />&nbsp;&nbsp;', $refs_diff_2); 
          }
-         else $res .= "No snippets found in page which are not logged in metafile<br />";
+         else $res .= $this->dbg("No snippets found in page which are not logged in metafile");
   
         $res .= $this->update_metafile($refs_diff_2,$refs_diff_1,$id,  $matches_tm[1][0] ,$page_entries);
 
@@ -142,7 +144,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          } 
          else $diff = implode('<br />',$diff);           
          
-        $res .= "<br><b>Removing from the database:</b></br>" . $diff;
+        $res .= "<br><b>" . $this->getLang("remove_from_db") . "</b></br>" . $diff;
         return $res;
     }
    
@@ -155,22 +157,22 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
       $isref = p_get_metadata($id, 'relation isreferencedby');
       if(!empty($add_array)) {
           $to_add = true;
-      $ret .= 'Add to metafile: ' . implode(',  ', $add_array) . "<br />" ;
+          $ret .= $this->dbg('Add to metafile: ',$add_array);
       }
-      else $ret .="No additions to metafile<br />";
+      else $ret .=$this->dbg("No additions to metafile");
       
        if(!empty($remove_array)) {
          $to_remove=true;  
-      $ret .= 'Remove from metafile: ' . implode(',  ', $remove_array) . "<br />" ;
+        $ret .= $this->dbg('Remove from metafile: ', $remove_array);
        }
-       else $ret .="No snippets to remove from metafile<br />";
+       else $ret .=$this->dbg("No snippets to remove from metafile");
                   
       $snippet_array = $isref['snippets'];
       
-      $ret .= "<b>Updating Metafile</b><br/>";
+      $ret .= "<b>" . $this->getLang("updating_mf")."</b><br/>";
      if($to_remove) {
-          $ret .= "<b>Removing:</b><br/>";
-     foreach($snippet_array as $snippet=>$date) {
+         $ret .= "<b>" . $this->getLang("removing"). "</b><br/>";
+         foreach($snippet_array as $snippet=>$date) {
              if(in_array($snippet,$remove_array)) {
                     $ret .=  "&nbsp;&nbsp;&nbsp;&nbsp;$snippet<br />";     
                    continue;    
@@ -181,7 +183,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
       }
       
       if($to_add) {
-      $ret  .="<b>Adding: </b><br />"; 
+      $ret  .="<b>" . $this->getLang("adding") . "</b><br />"; 
       foreach($add_array as $add){
               $updated ['snippets'] [$add] =$tm;
               $ret .= "&nbsp; &nbsp;&nbsp;&nbsp;$add<br />";
@@ -196,13 +198,22 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
       }
     }
 
-      $ret .= 'Updated snippets Entry: ' .   print_r($updated ,1) . "<br />"; 
+      $ret .= $this->getLang("updated") .   print_r($updated ,1) . "<br />"; 
       
      $data['relation']['isreferencedby']['snippets']=$updated['snippets'];
      p_set_metadata($id, $data);      
       return $ret;
       
   }
+  
+  function dbg($text, $ar = array()) {
+      if(!$this->debug) return "";
+      if(!empty($ar)) {
+          $text .= implode(', ', $ar);
+      }
+      return "dbg: " . $text . "<br />";
+  }
+  
     function js() {
 echo <<<SCRIPT
 <script type="text/javascript">
