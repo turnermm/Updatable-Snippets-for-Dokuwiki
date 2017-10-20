@@ -14,16 +14,11 @@
 class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
 
     var $output = '';
-    private $metaFn;
-    private $metaFnBak;
-    private $helper;
+    private $metaFn;    
+ 
     function __construct() {       
        $metafile= 'snippets_upd';
-       $this->metaFn = metaFN($metafile,'.ser');
-       $meta_bak = 'snippets_upd_bak';
-       $this->metaFnBak  = metaFN($meta_bak,'.ser');
-       //msg($this->metaFnBak);
-       $this->helper = $this->loadHelper('snippets',1);
+       $this->metaFn = metaFN($metafile,'.ser');   
     }
     /**
      * handle user request
@@ -55,8 +50,8 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
      * output appropriate html
      */
     function html() {
- //   ptln('<a href="javascript:prereg_Inf.toggle();void 0"><span style="line-height: 175%">Toggle info</span></a><br />');
- //    ptln('<div id="prereg_info" style="border: 1px solid silver; padding:4px;">'.     $this->locale_xhtml('info') . '</div><br>' );
+    ptln('<a href="javascript:snippets_Inf.toggle();void 0"><span style="line-height: 175%">Toggle info</span></a><br />');
+     ptln('<div id="prereg_info" style="border: 1px solid silver; padding:4px;">'.     $this->locale_xhtml('info') . '</div><br>' );
     
       
       ptln('<form action="'.wl($ID).'" method="post">');
@@ -65,18 +60,12 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
       ptln('  <input type="hidden" name="do"   value="admin" />');
       ptln('  <input type="hidden" name="page" value="'.$this->getPluginName().'" />');
       formSecurityToken();      
-      $but_1 = $this->getLang('btn_secure')| 'Snips';
-      $but_2 = $this->getLang('btn_prune')| 'Docs';
-   //   ptln('  <input type="submit" name="cmd[prune]"  value="'.$but_1 .'" />&nbsp;&nbsp;');
-      ptln('  <input type="submit" name="cmd[docs]"  value="'. $but_2.'" />');
+ 
+      $but_1 = $this->getLang('cleanup_but')| 'START'; 
+      ptln('  <input type="submit" name="cmd[docs]"  value="'. $but_1.'" />');
        ptln('<br /><br /><div>');
       
-      
-      
-      if($this->output == 'prune') {
-           echo $this->prune_datafile('snip');
-      }
-      else  if($this->output == 'doc') {
+       if($this->output == 'doc') {
            echo $this->prune_datafile('doc');
       }
 
@@ -86,21 +75,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
     }
  
 
-    function secure_datafile() {
-         $perm = substr(sprintf('%o', fileperms($this->metaFn )), -4);         
-         if(preg_match('/\d\d(\d)/',$perm,$matches)) {   
-            if($matches[1] > 0) {
-                 msg("Data file is currently accessible to all: $perm");
-                 if(chmod($this->metaFn ,0600)) { 
-                    msg("Succesfully change permissions to: 0600");
-                 }
-                 else  msg("Unable to change permissions to: 0600");
-             }
-         }
-    }
-
-    function prune_datafile($which="doc") {
-   
+    function prune_datafile() {   
    $ret = '<b>Database: </b>' . $this->metaFn;
     $data_all = unserialize(io_readFile($this->metaFn,false));    
     $data = $data_all['doc'];   
@@ -232,7 +207,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
 echo <<<SCRIPT
 <script type="text/javascript">
     //<![CDATA[    
-var prereg_Inf = {
+var snippets_Inf = {
 dom_style: document.getElementById('prereg_info').style,
 open: function() { this.dom_style.display = 'block'; },
 close: function() { this.dom_style.display = "none"; },
