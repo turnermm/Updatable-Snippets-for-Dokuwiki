@@ -2,9 +2,10 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)  
-  * @author liz <marliza@web.de>
+ *
+ * @author liz <marliza@web.de>
  * @author Umberto Schlansky <schohns@quantentunnel.de>
  */
 $lang['snippets_page']         = 'Wikiseite, aus der die Vorlagenliste erstellt wird (muss eine ungeordnete Liste enthalten)';
 $lang['snips_updatable']       = 'Snippets standardmäßig aktualisierbar machen';
-$lang['old_revisions'] = 'Lade automatisch neue Snippetsversionen in  Ältere Versionen';
+$lang['old_revisions']         = 'Lade automatisch neue Snippetsversionen in  Ältere Versionen';
