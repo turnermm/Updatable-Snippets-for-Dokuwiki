@@ -2,10 +2,11 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
+ * @author turnermm <turnermm02@shaw.ca>
  * @author Padhie <develop@padhie.de>
-  * @author liz <marliza@web.de>
-  * @author Umberto Schlansky <schohns@quantentunnel.de>
+ * @author liz <marliza@web.de>
+ * @author Umberto Schlansky <schohns@quantentunnel.de>
  */
 $lang['js']['preview']         = 'Vorschau';
 $lang['js']['insert']          = 'Einfügen';
@@ -17,3 +18,5 @@ $lang['refresh_title']         = 'Ungenutzte Snippeteinträge und Seiten-IDs aus
 $lang['refresh']               = 'Snippet-Datenbank neu laden';
 $lang['hide_table']            = 'Aktualisierungstabelle verbergen';
 $lang['click_to_update']       = 'Zum Aktualisieren klicken';
+$lang['yes']                   = 'Ja';
+$lang['no']                    = 'Nein';
