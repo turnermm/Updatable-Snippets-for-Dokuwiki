@@ -19,3 +19,15 @@ $lang['no'] ='No';
 $lang['msg_2'] = 'Any outdated snippets have already been inserted. ';
 $lang['js']['restore_off']= 'Restore is not available when updating snippets to Old Revisions';
 $lang['replace']='Replace outdated snippets in this Old Revision?';
+$lang['menu'] = "Update Snippets metadata";
+$lang['cleanup_but'] = 'Start Clean-up';
+$lang  ["dbase"] = 'Database: ';
+$lang ["logged_for"] ='snippets logged for ';
+$lang ["in_page"] ='Snippets currently in page:';
+$lang ["in_meta"] ='Found in metafile:';  
+$lang ["remove_from_db"] ="Removing from the database:";
+$lang ["updating_mf"] ="Updating Metafile";
+$lang ["removing"] ="Removing:";
+$lang ["adding"]="Adding:"; 
+$lang ["updated"]='Updated snippets Entry: ';
+

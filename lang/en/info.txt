@@ -1,0 +1,7 @@
+This tool should  reconcile any differences between the metafiles, the pages, and the database.
+It compares the snippets found in the page files against the snippets logged in their metafiles, and then updates the metafiles to reflect the contents of the pages. 
+It also updates the database which holds two lists:
+    - pages which have snippets and which snippets
+    - snippets and the pages they are embedded in
+    
+
