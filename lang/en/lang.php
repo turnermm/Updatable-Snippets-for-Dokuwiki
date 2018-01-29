@@ -29,5 +29,6 @@ $lang["remove_from_db"] ="Removing from the database:";
 $lang["updating_mf"] ="Updating Metafile";
 $lang["removing"] ="Removing:";
 $lang["adding"]="Adding:"; 
-$lang["updated"]='Updated snippets Entry: ';
+$lang["updated"]='Updated snippets entry: ';
+$lang["finished"]='Nothing left to do';
 

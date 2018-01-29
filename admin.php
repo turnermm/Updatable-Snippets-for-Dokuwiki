@@ -129,18 +129,18 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
          $refs_diff_1 = array_diff($refs_keys,$matches[1]);   
          $refs_diff_2 = array_diff($matches[1],$refs_keys);
          if(!empty( $refs_diff_1 ))
-            $res .= $this->dbg('<b>Snippets in metafile not in page:</b><br />&nbsp;&nbsp; ', $refs_diff_1) ; 
-         else $res .= $this->dbg("No snippets found in metafile not in page");
+            $res .= $this->dbg('<b>Snippets in metafile not in page:</b><br />&nbsp;&nbsp; ', $refs_diff_1,"132") ; 
+         else $res .= $this->dbg("No snippets found in metafile not in page","133");
          if(!empty($refs_diff_2)) {
-             $res .= $this->dbg('<b>Snippets in page not in meta file:</b><br />&nbsp;&nbsp;', $refs_diff_2); 
+             $res .= $this->dbg('<b>Snippets in page not in meta file:</b><br />&nbsp;&nbsp;', $refs_diff_2,"135"); 
          }
-         else $res .= $this->dbg("No snippets found in page which are not logged in metafile");
+         else $res .= $this->dbg("No snippets found in page which are not logged in metafile","137");
   
         $res .= $this->update_metafile($refs_diff_2,$refs_diff_1,$id,  $matches_tm[1][0] ,$page_entries);
 
          $diff = array_diff($snips,$matches[1]) ; 
          if(empty($diff)) {         
-            $diff = " no discrepancies found";
+            $diff = $this->getLang('finished');
          } 
          else $diff = implode('<br />',$diff);           
          
@@ -159,16 +159,16 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
           $to_add = true;
           $ret .= $this->dbg('Add to metafile: ',$add_array);
       }
-      else $ret .=$this->dbg("No additions to metafile");
+      else $ret .=$this->dbg("No additions to metafile&nbsp;&nbsp;'","163");
       
        if(!empty($remove_array)) {
          $to_remove=true;  
-        $ret .= $this->dbg('Remove from metafile: ', $remove_array);
+        $ret .= $this->dbg('Remove from metafile&nbsp;&nbsp; ', $remove_array,"167");
        }
        else $ret .=$this->dbg("No snippets to remove from metafile");
                   
       $snippet_array = $isref['snippets'];
-      
+      $ret .= $this->dbg('metafile snippet_array: ', $snippet_array,"172");
       $ret .= "<b>" . $this->getLang("updating_mf")."</b><br/>";
      if($to_remove) {
          $ret .= "<b>" . $this->getLang("removing"). "</b><br/>";
@@ -180,6 +180,10 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
              $updated['snippets'][$snippet]=$date;
           }
             $ret .= "<br/>";
+            if(count($updated))  {
+             $ret .= $this->dbg('updated: ', $updated,"185");
+            }
+            else $ret .= $this->dbg('No snippets remaining in ' . $id);
       }
       
       if($to_add) {
@@ -189,7 +193,7 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
               $ret .= "&nbsp; &nbsp;&nbsp;&nbsp;$add<br />";
           }           
       }
-      if(empty($updated)) return $ret;
+ 
       
     // merge page entries with updates  
     foreach($page_ar as $snip=>$tm) {
@@ -206,11 +210,12 @@ class admin_plugin_snippets extends DokuWiki_Admin_Plugin {
       
   }
   
-  function dbg($text, $ar = array()) {
-      if(!$this->debug) return "";
-      if(!empty($ar)) {
-          $text .= implode(', ', $ar);
+  function dbg($text, $ar = array(),$line="") {   
+  if(!$this->debug) return;
+  if($ar) {
+          $text .= print_r( $ar, 1);
       }
+      if($line) $text .= " [$line]";
       return "dbg: " . $text . "<br />";
   }
   
