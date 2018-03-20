@@ -1,0 +1,5 @@
+Cet outil devrait réconcilier les différences entre les métafichiers, les pages et la base de données.
+Il compare les fragments trouvés dans les fichiers de page, avec ceux enregistrés dans leur métafichier, et ensuite met à jour les métafichiers pour refléter le contenu des pages.
+Il met également à jour la base de données qui conserve deux listes :
+  - Pages qui ont des fragments et quels fragments,
+  - fragments et les pages dans lesquelles ils sont inclus.
