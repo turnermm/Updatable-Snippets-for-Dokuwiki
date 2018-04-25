@@ -125,7 +125,7 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
       * @ param $force boolean: if true, latest snippet will be inserted into Old Revisions
     */  
     function insertSnippet(&$result, $page_id,$force) {
-
+         if(!file_exists(wikiFN($page_id))) return;
          $snip_data=unserialize(io_readFile($this->metafn,false));          
          if(!array_key_exists($page_id,$snip_data['doc'])) return; //Check if page contains snippet
 
