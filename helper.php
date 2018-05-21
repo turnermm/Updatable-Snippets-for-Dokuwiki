@@ -136,6 +136,7 @@ class helper_plugin_snippets extends DokuWiki_Plugin {
         
          foreach ($snippets as $snip) {            
              $snip_file = wikiFN($snip);          
+             if(!file_exists($snip_file)) continue;             
              $snip_t = filemtime($snip_file);     
 
              if($snip_t < $page_t && $this->snippetWasUpdated($page_id,$snip) && !$force) { 
