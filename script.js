@@ -305,7 +305,7 @@ if(opener) {
    }
   if(toolbar){
      var url = encodeURI('lib/plugins/snippets/exe/snippets.php?ns=');
-     toolbar[toolbar.length] = {"type":"mediapopup", "title":"snippets utility", "key":"",
+     toolbar[toolbar.length] = {"type":"mediapopup", "title": LANG['plugins']['snippets']['title'], "key":"",
                                 "icon": "../../plugins/snippets/images/icon.png",
                                 "url":   url,
                                 'name': 'snippets',
