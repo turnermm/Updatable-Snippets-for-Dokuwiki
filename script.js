@@ -303,4 +303,12 @@ if(opener) {
       DokuCookie.setValue('snippets_old_rev',which) ;  
   
    }
- 
+  if(toolbar){
+     var url = encodeURI('lib/plugins/snippets/exe/snippets.php?ns=');
+     toolbar[toolbar.length] = {"type":"mediapopup", "title": LANG['plugins']['snippets']['title'], "key":"",
+                                "icon": "../../plugins/snippets/images/icon.png",
+                                "url":   url,
+                                'name': 'snippets',
+                                'options' : 'width=800,height=500,left=20,top=20,scrollbars=no,resizable=yes'         
+                              };
+  }

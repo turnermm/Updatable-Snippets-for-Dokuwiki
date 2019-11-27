@@ -19,7 +19,6 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
      * Register callbacks
      */
     function register(Doku_Event_Handler $controller) {
-        $controller->register_hook('TOOLBAR_DEFINE','AFTER', $this, 'handle_toolbar_define');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call');
         $controller->register_hook('IO_WIKIPAGE_READ', 'AFTER', $this, 'handle_wiki_read');        
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'handle_content_display');
@@ -78,26 +77,6 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
          
      }
      
-
-    /**
-     * Adds the new toolbar item
-     *
-     * @author Michael Klier <chi@chimeric.de>
-     */
-    function handle_toolbar_define(Doku_Event $event, $param) {
-        if(!page_exists($this->getConf('snippets_page'))) return;
-
-        $item = array(
-                'type' => 'mediapopup',
-                'title' => $this->getLang('gb_snippets'),
-                'icon' => '../../plugins/snippets/images/icon.png',
-                'url' => 'lib/plugins/snippets/exe/snippets.php?ns=',
-                'name' => 'snippets',
-                'options' => 'width=800,height=500,left=20,top=20,scrollbars=no,resizable=yes'
-                );
-        $event->data[] = $item;
-    }
-
     function handle_dw_started(Doku_Event $event, $param) {
         global $JSINFO;
         if($this->getConf('snips_updatable')) {
