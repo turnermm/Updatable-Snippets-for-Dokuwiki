@@ -31,4 +31,5 @@ $lang["removing"] ="Removing:";
 $lang["adding"]="Adding:"; 
 $lang["updated"]='Updated snippets entry: ';
 $lang["finished"]='Nothing left to do';
+$lang['js']['title'] = $lang['gb_snippets'] ;
 
