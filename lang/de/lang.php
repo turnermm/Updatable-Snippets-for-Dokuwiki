@@ -3,6 +3,7 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
+ * @author Axel Schwarzer <SchwarzerA@gmail.com>
  * @author Jiargei <nerdish@quantentunnel.de>
  * @author turnermm <turnermm02@shaw.ca>
  * @author Padhie <develop@padhie.de>
@@ -29,8 +30,12 @@ $lang['replace']               = 'Ersetze nicht aktuelle Snippets in dieser alte
 $lang['menu']                  = 'Aktualisiere die Metadaten des Snippets';
 $lang['cleanup_but']           = 'Beginne mit dem Aufräumen';
 $lang['dbase']                 = 'Datenbank:';
+$lang['logged_for']            = 'protokollierte Snippets';
 $lang['in_page']               = 'Snippets aktuell in der Seite:';
+$lang['in_meta']               = 'Gefunden in Metadatei:';
 $lang['remove_from_db']        = 'Entferne von der Datenbank:';
+$lang['updating_mf']           = 'Aktualisiere Metadatei:';
 $lang['removing']              = 'Entferne:';
 $lang['adding']                = 'Füge hinzu:';
+$lang['updated']               = 'Aktualisierter Snippets-Eintrag:';
 $lang['finished']              = 'Nichts mehr zu tun';

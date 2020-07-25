@@ -1,0 +1,8 @@
+Dieses Tool soll alle Unterschiede zwischen den Metadateien, den Seitendateien und der Datenbank ausgleichen.
+
+Es vergleicht die in den Seitendateien gefundenen Snippets mit den in ihren Metadateien protokollierten Snippets und aktualisiert dann die Metadateien, um den Inhalt der Seitendateien wiederzugeben.
+
+Außerdem wird die Datenbank aktualisiert, die zwei Listen enthält:
+
+  * Seitendateien die Snippets enthalten und welche Snippets
+  * Snippets und die Seitendateien, die sie enthalten
