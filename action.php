@@ -97,8 +97,8 @@ class action_plugin_snippets extends DokuWiki_Action_Plugin {
         $event->data['tpl'] = preg_replace('/<snippet>.*?<\/snippet>/s',"",$event->data['tpl']);
              
          $stringvars =   // from newpagtemplate userreplace
-             array_map(create_function('$v', 'return explode(",",$v,2);'),
-                 explode(';',$_REQUEST['macros']));              
+             array_map(function($v) { return explode(",",$v,2); },
+                 explode(';',$_REQUEST['macros']));
          foreach($stringvars as $value) {
              $event->data['tpl'] = str_replace(trim($value[0]),hsc(trim($value[1])),$event->data['tpl']);
 	    }
